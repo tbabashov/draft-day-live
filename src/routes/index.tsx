@@ -2,6 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, useInView, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowUpRight, Trophy, Users, Zap, Grid3x3, ChevronDown, Play } from "lucide-react";
+import haalandAsset from "@/assets/faces/haaland.png.asset.json";
+import sakaAsset from "@/assets/faces/saka.png.asset.json";
+import martinelliAsset from "@/assets/faces/martinelli.webp.asset.json";
+import mitomaAsset from "@/assets/faces/mitoma.png.asset.json";
+import salahAsset from "@/assets/faces/salah.png.asset.json";
 
 export const Route = createFileRoute("/")({
   component: Landing,
