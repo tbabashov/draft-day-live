@@ -306,11 +306,11 @@ function FeatureDraft() {
       </div>
       <div className="flex gap-3 mt-8">
         {[
-          { r: "94", n: "HAALAND", pos: "ST", tier: "gold" },
-          { r: "89", n: "SAKA", pos: "RW", tier: "gold" },
-          { r: "82", n: "MARTINELLI", pos: "LW", tier: "silver" },
-          { r: "76", n: "MITOMA", pos: "LM", tier: "bronze" },
-          { r: "91", n: "SALAH", pos: "RW", tier: "gold" },
+          { r: "94", n: "HAALAND", pos: "ST", tier: "gold", face: haalandAsset.url },
+          { r: "89", n: "SAKA", pos: "RW", tier: "gold", face: sakaAsset.url },
+          { r: "82", n: "MARTINELLI", pos: "LW", tier: "silver", face: martinelliAsset.url },
+          { r: "76", n: "MITOMA", pos: "LM", tier: "bronze", face: mitomaAsset.url },
+          { r: "91", n: "SALAH", pos: "RW", tier: "gold", face: salahAsset.url },
         ].map((p, i) => (
           <PlayerCard key={i} {...p} delay={i * 0.08} />
         ))}
@@ -319,20 +319,23 @@ function FeatureDraft() {
   );
 }
 
-function PlayerCard({ r, n, pos, tier, delay = 0 }: { r: string; n: string; pos: string; tier: string; delay?: number }) {
+function PlayerCard({ r, n, pos, tier, face, delay = 0 }: { r: string; n: string; pos: string; tier: string; face?: string; delay?: number }) {
   const grad = tier === "gold" ? "from-[oklch(0.82_0.16_85)] to-[oklch(0.55_0.15_70)]"
     : tier === "silver" ? "from-[oklch(0.85_0.01_260)] to-[oklch(0.55_0.008_260)]"
     : "from-[oklch(0.62_0.13_55)] to-[oklch(0.4_0.1_40)]";
   return (
     <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} transition={{ delay }}
-      className={`relative flex-1 aspect-[3/4] max-w-[110px] rounded-lg bg-gradient-to-b ${grad} p-2 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.6)] hover:-translate-y-2 transition-transform`}
+      className={`relative flex-1 aspect-[3/4] max-w-[110px] rounded-lg bg-gradient-to-b ${grad} p-2 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.6)] hover:-translate-y-2 transition-transform overflow-hidden`}
       style={{ transform: "translateZ(40px)" }}
     >
-      <div className="text-black font-display">
+      {face && (
+        <img src={face} alt={n} className="absolute inset-x-0 bottom-6 mx-auto w-[85%] object-contain pointer-events-none mix-blend-luminosity opacity-90" />
+      )}
+      <div className="relative text-black font-display">
         <div className="text-3xl leading-none">{r}</div>
         <div className="text-[10px] font-bold">{pos}</div>
       </div>
-      <div className="absolute inset-x-2 bottom-2 text-black text-[10px] font-black uppercase tracking-tight truncate">{n}</div>
+      <div className="absolute inset-x-2 bottom-2 text-black text-[10px] font-black uppercase tracking-tight truncate z-10">{n}</div>
     </motion.div>
   );
 }
