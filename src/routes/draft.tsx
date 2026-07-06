@@ -165,9 +165,10 @@ function DraftPage() {
               <RefreshCw className="w-4 h-4" />
             </button>
             {done && (
-              <Link to="/" className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:shadow-[0_10px_40px_-10px_var(--crimson)] transition-all">
+              <Link to="/tactics" className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:shadow-[0_10px_40px_-10px_var(--crimson)] transition-all">
                 Set tactics <ArrowRight className="w-4 h-4" />
               </Link>
+
             )}
           </div>
         </div>
