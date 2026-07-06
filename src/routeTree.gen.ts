@@ -9,9 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TacticsRouteImport } from './routes/tactics'
 import { Route as DraftRouteImport } from './routes/draft'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TacticsRoute = TacticsRouteImport.update({
+  id: '/tactics',
+  path: '/tactics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DraftRoute = DraftRouteImport.update({
   id: '/draft',
   path: '/draft',
@@ -26,31 +32,42 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/draft': typeof DraftRoute
+  '/tactics': typeof TacticsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/draft': typeof DraftRoute
+  '/tactics': typeof TacticsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/draft': typeof DraftRoute
+  '/tactics': typeof TacticsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/draft'
+  fullPaths: '/' | '/draft' | '/tactics'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/draft'
-  id: '__root__' | '/' | '/draft'
+  to: '/' | '/draft' | '/tactics'
+  id: '__root__' | '/' | '/draft' | '/tactics'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DraftRoute: typeof DraftRoute
+  TacticsRoute: typeof TacticsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tactics': {
+      id: '/tactics'
+      path: '/tactics'
+      fullPath: '/tactics'
+      preLoaderRoute: typeof TacticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/draft': {
       id: '/draft'
       path: '/draft'
@@ -71,6 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DraftRoute: DraftRoute,
+  TacticsRoute: TacticsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
