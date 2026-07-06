@@ -27,12 +27,37 @@ const BENCH_SLOTS: Slot[] = Array.from({ length: 7 }, (_, i) => ({
 
 type Assignments = Record<string, Player | undefined>;
 
+const STORAGE_KEY = "gaffer.draft.v1";
+
 function DraftPage() {
   const [pool, setPool] = useState<Player[]>(() => ALL_PLAYERS.slice());
   const [assignments, setAssignments] = useState<Assignments>({});
   const [openSlot, setOpenSlot] = useState<Slot | null>(null);
   const [picker, setPicker] = useState<Player[]>([]);
   const [swapFrom, setSwapFrom] = useState<Slot | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as { assignments?: Assignments; usedIds?: string[] };
+      if (parsed.assignments) setAssignments(parsed.assignments);
+      if (parsed.usedIds?.length) {
+        const used = new Set(parsed.usedIds);
+        setPool(ALL_PLAYERS.filter((p) => !used.has(p.id)));
+      }
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const usedIds = Object.values(assignments).filter(Boolean).map((p) => (p as Player).id);
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ assignments, usedIds }));
+    } catch {}
+  }, [assignments]);
+
 
   const allSlots = useMemo(() => [...FORMATION_433, ...BENCH_SLOTS], []);
   const filledXi = FORMATION_433.filter((s) => assignments[s.id]).length;
