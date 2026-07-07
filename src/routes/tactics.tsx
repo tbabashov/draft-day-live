@@ -147,13 +147,12 @@ function TacticsPage() {
             <button onClick={resetAll} title="Reset tactics" className="grid place-items-center w-10 h-10 rounded-full border border-border hover:border-primary hover:text-primary transition">
               <RotateCcw className="w-4 h-4" />
             </button>
-            <button
-              disabled
-              title="Tournament unlocks in Chunk 4"
-              className="inline-flex items-center gap-2 rounded-full bg-primary/40 px-5 py-2.5 text-sm font-semibold text-primary-foreground cursor-not-allowed"
+            <Link
+              to="/tournament"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] hover:brightness-110"
             >
               Enter tournament <ArrowRight className="w-4 h-4" />
-            </button>
+            </Link>
           </div>
         </div>
       </header>
