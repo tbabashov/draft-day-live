@@ -1,6 +1,6 @@
 import type { Player, Slot, SlotKind } from "@/lib/draft-utils";
 
-export type FormationId = "4-3-3" | "4-4-2" | "4-2-3-1" | "3-5-2" | "3-4-3" | "5-3-2" | "4-1-4-1";
+export type FormationId = "4-3-3" | "4-3-3 Attack" | "4-3-3 Holding" | "4-4-2" | "4-2-3-1" | "3-5-2" | "3-4-3" | "5-3-2" | "4-1-4-1";
 
 export const FORMATIONS: Record<FormationId, Slot[]> = {
   "4-3-3": [
@@ -12,6 +12,32 @@ export const FORMATIONS: Record<FormationId, Slot[]> = {
     { id: "lcm", kind: "CM", x: 28, y: 50 },
     { id: "cm", kind: "CM", x: 50, y: 54 },
     { id: "rcm", kind: "CM", x: 72, y: 50 },
+    { id: "lw", kind: "LW", x: 18, y: 22 },
+    { id: "st", kind: "ST", x: 50, y: 16 },
+    { id: "rw", kind: "RW", x: 82, y: 22 },
+  ],
+  "4-3-3 Attack": [
+    { id: "gk", kind: "GK", x: 50, y: 92 },
+    { id: "lb", kind: "LB", x: 15, y: 72 },
+    { id: "lcb", kind: "CB", x: 37, y: 76 },
+    { id: "rcb", kind: "CB", x: 63, y: 76 },
+    { id: "rb", kind: "RB", x: 85, y: 72 },
+    { id: "lcm", kind: "CM", x: 30, y: 56 },
+    { id: "rcm", kind: "CM", x: 70, y: 56 },
+    { id: "cam", kind: "CAM", x: 50, y: 40 },
+    { id: "lw", kind: "LW", x: 18, y: 22 },
+    { id: "st", kind: "ST", x: 50, y: 16 },
+    { id: "rw", kind: "RW", x: 82, y: 22 },
+  ],
+  "4-3-3 Holding": [
+    { id: "gk", kind: "GK", x: 50, y: 92 },
+    { id: "lb", kind: "LB", x: 15, y: 72 },
+    { id: "lcb", kind: "CB", x: 37, y: 76 },
+    { id: "rcb", kind: "CB", x: 63, y: 76 },
+    { id: "rb", kind: "RB", x: 85, y: 72 },
+    { id: "cdm", kind: "CDM", x: 50, y: 60 },
+    { id: "lcm", kind: "CM", x: 33, y: 46 },
+    { id: "rcm", kind: "CM", x: 67, y: 46 },
     { id: "lw", kind: "LW", x: 18, y: 22 },
     { id: "st", kind: "ST", x: 50, y: 16 },
     { id: "rw", kind: "RW", x: 82, y: 22 },
@@ -149,18 +175,28 @@ export const DEFAULT_TACTICS: TacticsSettings = {
 // Fit score for placing a player in a slot kind (higher = better).
 const POS_FIT: Record<SlotKind, Record<string, number>> = {
   GK: { GK: 100 },
-  LB: { LB: 100, LWB: 85, LM: 60, CB: 40 },
-  RB: { RB: 100, RWB: 85, RM: 60, CB: 40 },
-  CB: { CB: 100, CDM: 55 },
-  LWB: { LWB: 100, LB: 85, LM: 70 },
-  RWB: { RWB: 100, RB: 85, RM: 70 },
-  CDM: { CDM: 100, CM: 80, CB: 55 },
-  CM: { CM: 100, CDM: 78, CAM: 78 },
-  CAM: { CAM: 100, CM: 80, ST: 55 },
-  LM: { LM: 100, LW: 80, LB: 60 },
-  RM: { RM: 100, RW: 80, RB: 60 },
-  LW: { LW: 100, LM: 80, ST: 55 },
-  RW: { RW: 100, RM: 80, ST: 55 },
+  // Full-back and wing-back on the same flank are interchangeable (no cost);
+  // switching flanks (LB↔RB) costs ~2.
+  // A centre-back shifted out to full-back costs ~4.
+  LB: { LB: 100, LWB: 100, LM: 75, RB: 75, RWB: 70, CB: 58 },
+  RB: { RB: 100, RWB: 100, RM: 75, LB: 75, LWB: 70, CB: 58 },
+  // A full-back tucked in at centre-back costs ~4.
+  CB: { CB: 100, CDM: 55, LB: 58, RB: 58 },
+  LWB: { LWB: 100, LB: 100, LM: 75 },
+  RWB: { RWB: 100, RB: 100, RM: 75 },
+  // CAM/CM/CDM are one family: swapping within it costs ~1 point.
+  // CDM↔CAM specifically (opposite ends of the family) costs ~4.
+  CDM: { CDM: 100, CM: 85, CAM: 58, CB: 55 },
+  CM: { CM: 100, CDM: 85, CAM: 85 },
+  // CAM out wide to a wing (and back) costs ~3.
+  CAM: { CAM: 100, CM: 85, CDM: 58, ST: 55, LW: 66, RW: 66 },
+  // Wide midfield and wing are mutually natural: no penalty either way.
+  // Full-backs pushing to wide midfield (and back) cost ~2.
+  LM: { LM: 100, LW: 100, LB: 75, LWB: 80 },
+  RM: { RM: 100, RW: 100, RB: 75, RWB: 80 },
+  // Winger on the wrong flank (LW↔RW) costs ~2; dropping to CAM costs ~3.
+  LW: { LW: 100, LM: 100, RW: 74, CAM: 66, ST: 55 },
+  RW: { RW: 100, RM: 100, LW: 74, CAM: 66, ST: 55 },
   ST: { ST: 100, CF: 90, CAM: 55, LW: 55, RW: 55 },
   CF: { CF: 100, ST: 90, CAM: 65 },
   ANY: {},
@@ -194,4 +230,22 @@ export function familiarity(assignments: Record<string, Player | undefined>, slo
   if (!xi.length) return 0;
   const avg = xi.reduce((sum, { s, p }) => sum + slotFitScore(p, s.kind), 0) / xi.length;
   return Math.round(avg); // 0..100
+}
+
+// A player's rating when deployed in a given slot. The penalty curve is
+// gentle near a natural fit (a CDM/CAM playing CM loses ~1-2) and only bites
+// hard when the position is genuinely foreign (e.g. a striker at CB).
+const MAX_POSITION_PENALTY = 15;
+export function effectiveOverall(p: Player, kind: SlotKind): number {
+  const fit = slotFitScore(p, kind);
+  const penalty = MAX_POSITION_PENALTY * Math.pow((100 - fit) / 100, 1.5);
+  return Math.max(0, Math.round(p.overall - penalty));
+}
+
+// Squad strength = average effective rating of the deployed XI.
+export function squadStrength(assignments: Record<string, Player | undefined>, slots: Slot[]): { rating: number; fit: number } {
+  const xi = slots.map((s) => ({ s, p: assignments[s.id] })).filter((x) => x.p) as { s: Slot; p: Player }[];
+  if (!xi.length) return { rating: 0, fit: 0 };
+  const rating = xi.reduce((sum, { s, p }) => sum + effectiveOverall(p, s.kind), 0) / xi.length;
+  return { rating: Math.round(rating), fit: familiarity(assignments, slots) };
 }

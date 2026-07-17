@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, useInView, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowUpRight, Trophy, Users, Zap, Grid3x3, ChevronDown, Play } from "lucide-react";
-import haalandAsset from "@/assets/faces/haaland.png.asset.json";
-import sakaAsset from "@/assets/faces/saka.png.asset.json";
-import martinelliAsset from "@/assets/faces/martinelli.webp.asset.json";
-import mitomaAsset from "@/assets/faces/mitoma.png.asset.json";
-import salahAsset from "@/assets/faces/salah.png.asset.json";
+import { ArrowRight, ArrowUpRight, Trophy, Users, Zap, Grid3x3 } from "lucide-react";
+import { ALL_PLAYERS, shuffle, type Player } from "@/lib/draft-utils";
+import { DraftCard } from "@/components/DraftCard";
+import { clubLogo } from "@/lib/logos";
+import brunoFace from "@/assets/faces/bruno_fernandes.webp";
+import kroupiFace from "@/assets/faces/eli_junior_kroupi.png";
+import kadiogluFace from "@/assets/faces/ferdi_kadioglu.webp";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -48,8 +49,9 @@ function Nav() {
           <a href="#features" className="hover:text-foreground transition">Features</a>
           <a href="#stats" className="hover:text-foreground transition">Stats</a>
           <a href="#faq" className="hover:text-foreground transition">FAQ</a>
+          <a href="/history" className="hover:text-foreground transition">Trophies</a>
         </nav>
-        <a href="#hero-cta" className="group inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:shadow-[0_10px_40px_-10px_var(--crimson)] transition-all">
+        <a href="/home" className="group cta-pulse inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:shadow-[0_10px_40px_-10px_var(--crimson)] transition-all">
           Start drafting
           <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition" />
         </a>
@@ -91,7 +93,7 @@ function Hero() {
   }, []);
 
   return (
-    <section ref={ref} className="relative min-h-screen flex items-center pt-24 grain overflow-hidden">
+    <section ref={ref} className="relative min-h-screen flex items-center pt-24 pb-24 md:pb-32 grain overflow-hidden">
       {/* Mouse-reactive blobs */}
       <motion.div style={{ x: blob1X, y: blob1Y }} className="absolute top-[10%] left-[10%] w-[55vw] h-[55vw] rounded-full bg-primary/25 blur-[120px] pointer-events-none" />
       <motion.div style={{ x: blob2X, y: blob2Y }} className="absolute bottom-[5%] right-[5%] w-[45vw] h-[45vw] rounded-full bg-[oklch(0.55_0.18_260)]/25 blur-[120px] pointer-events-none" />
@@ -99,13 +101,14 @@ function Hero() {
       <div className="absolute inset-0 opacity-[0.07] pointer-events-none"
         style={{ backgroundImage: "linear-gradient(var(--foreground) 1px, transparent 1px), linear-gradient(90deg, var(--foreground) 1px, transparent 1px)", backgroundSize: "80px 80px" }} />
 
-      <div className="relative mx-auto max-w-7xl px-6 w-full">
+      <div className="relative mx-auto max-w-7xl px-6 w-full lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-12">
+        <div>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
           className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 backdrop-blur px-4 py-1.5 text-xs font-mono uppercase tracking-widest text-muted-foreground">
           <span className="w-1.5 h-1.5 rounded-full bg-accent ticker-dot" /> Season 26 · Now open
         </motion.div>
 
-        <h1 className="mt-8 font-display text-[clamp(3.5rem,12vw,11rem)] leading-[0.85] tracking-tight">
+        <h1 className="mt-8 font-display text-[clamp(3.5rem,12vw,11rem)] lg:text-[clamp(3.5rem,7vw,7.5rem)] leading-[0.85] tracking-tight">
           <motion.span initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }} className="block">DRAFT.</motion.span>
           <motion.span initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }} className="block text-muted-foreground">DEPLOY.</motion.span>
           <span className="block relative h-[0.95em] overflow-hidden">
@@ -124,34 +127,88 @@ function Hero() {
           </span>
         </h1>
 
-        <div className="mt-12 flex flex-col md:flex-row md:items-end justify-between gap-8 max-w-6xl">
+        <div className="mt-12 flex flex-col gap-8">
           <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-            Draft your XI from every Premier League star. Set the tactics. Battle 15 rival clubs in a knockout bracket. No wallets, no packs — just you and the gaffer's chair.
+            Draft your XI from every Premier League star. Set the tactics. Then take them to a knockout cup — or grind out a 21-club league season. No wallets, no packs — just you and the gaffer's chair.
           </p>
           <div id="hero-cta" className="flex items-center gap-4">
-            <a href="/draft" className="group relative inline-flex items-center gap-3 rounded-full bg-primary px-8 py-4 font-semibold text-primary-foreground shadow-[0_20px_60px_-20px_var(--crimson)] hover:shadow-[0_25px_80px_-15px_var(--crimson)] transition-all">
+            <a href="/home" className="group relative inline-flex items-center gap-3 rounded-full bg-primary px-8 py-4 font-semibold text-primary-foreground shadow-[0_20px_60px_-20px_var(--crimson)] hover:shadow-[0_25px_80px_-15px_var(--crimson)] transition-all">
               Start your draft
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition" />
             </a>
-            <button className="group inline-flex items-center gap-2 text-sm font-medium text-foreground/80 hover:text-foreground transition">
-              <span className="w-10 h-10 rounded-full border border-border grid place-items-center group-hover:border-primary transition">
-                <Play className="w-3.5 h-3.5 fill-current" />
-              </span>
-              Watch 30s reel
-            </button>
           </div>
         </div>
+        </div>
 
-        {/* Scroll indicator */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-xs font-mono uppercase tracking-widest text-muted-foreground flex flex-col items-center gap-2">
-          <span>Scroll</span>
-          <motion.div animate={{ y: [0, 6, 0] }} transition={{ repeat: Infinity, duration: 1.8 }}>
-            <ChevronDown className="w-4 h-4" />
-          </motion.div>
-        </motion.div>
+        <HeroCollage />
       </div>
     </section>
+  );
+}
+
+/* ---------------- HERO COLLAGE ---------------- */
+function HeroCollage() {
+  const cards = [
+    {
+      r: 91, pos: "CAM", name: "FERNANDES", face: brunoFace, club: "manutd",
+      stats: { PAC: 66, SHO: 85, PAS: 91, DRI: 83, DEF: 64, PHY: 76 },
+      grad: "from-[oklch(0.72_0.19_340)] via-[oklch(0.72_0.15_20)] to-[oklch(0.74_0.15_60)]",
+      cls: "top-0 left-0 -rotate-6 z-10", delay: 0.3,
+    },
+    {
+      r: 78, pos: "ST", name: "KROUPI", face: kroupiFace, club: "bournemouth",
+      stats: { PAC: 81, SHO: 80, PAS: 66, DRI: 79, DEF: 34, PHY: 70 },
+      grad: "from-[oklch(0.86_0.012_260)] via-[oklch(0.72_0.01_260)] to-[oklch(0.5_0.008_260)]",
+      cls: "top-20 right-0 rotate-[5deg] z-20", delay: 0.45,
+    },
+    {
+      r: 80, pos: "LB", name: "KADIOĞLU", face: kadiogluFace, club: "brighton",
+      stats: { PAC: 84, SHO: 66, PAS: 77, DRI: 81, DEF: 78, PHY: 77 },
+      grad: "from-[oklch(0.8_0.14_90)] via-[oklch(0.72_0.14_82)] to-[oklch(0.58_0.13_72)]",
+      cls: "bottom-0 left-12 rotate-[-2deg] z-30", delay: 0.6,
+    },
+  ];
+  return (
+    <div className="relative hidden lg:block w-[26rem] h-[36rem] pointer-events-none select-none">
+      {cards.map((c) => (
+        <motion.div key={c.name}
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: c.delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className={`absolute ${c.cls}`}
+        >
+          <motion.div
+            animate={{ y: [0, -8, 0] }}
+            transition={{ repeat: Infinity, duration: 5.5, delay: c.delay * 2, ease: "easeInOut" }}
+            className={`w-[15rem] rounded-2xl bg-gradient-to-br ${c.grad} p-5 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.7)] ring-1 ring-white/20`}
+          >
+            <div className="flex items-start justify-between">
+              <div className="font-display text-black/85">
+                <div className="text-6xl leading-none">{c.r}</div>
+                <div className="mt-1 font-mono text-[11px] font-bold tracking-[0.2em]">{c.pos}</div>
+              </div>
+              {clubLogo(c.club) ? (
+                <img src={clubLogo(c.club)} alt="" className="w-8 h-8 object-contain drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]" />
+              ) : (
+                <div className="w-6 h-6 rounded-full bg-black/20" />
+              )}
+            </div>
+            <img src={c.face} alt={c.name} className="mx-auto -mt-4 h-36 object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.35)]" />
+            <div className="mt-2 border-t border-black/25 pt-3">
+              <div className="font-display text-2xl tracking-wide text-black/85">{c.name}</div>
+              <div className="mt-2 grid grid-cols-3 gap-x-3 gap-y-1 font-mono text-[11px] text-black/75">
+                {Object.entries(c.stats).map(([k, v]) => (
+                  <div key={k} className="flex items-baseline justify-between">
+                    <span className="opacity-70">{k}</span>
+                    <span className="font-bold">{v}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      ))}
+    </div>
   );
 }
 
@@ -188,10 +245,10 @@ function HowItWorks() {
   const lineHeight = useTransform(scrollYProgress, [0.1, 0.7], ["0%", "100%"]);
 
   const steps = [
-    { n: "01", title: "Enter the draft", body: "Every Premier League player enters one pool. Rarity tiers from Bronze to Icon. Fair for everyone." },
-    { n: "02", title: "Pick your XI", body: "Each position gives you 5 random eligible players. Choose once. Live with it. No rerolls." },
-    { n: "03", title: "Set your tactics", body: "Formation, mentality, tempo, pressing, width. Fit players out of position — pay the price." },
-    { n: "04", title: "Win the bracket", body: "16-team knockout. Your squad quality vs their reputation. Watch the match unfold live." },
+    { n: "01", title: "Draft your club", body: "Formation first, then your captain, then the XI and bench — five cards a pick, one choice, no rerolls." },
+    { n: "02", title: "Set your tactics", body: "Mentality, pressing, tempo, width, roles. Play someone out of position and their rating pays the price." },
+    { n: "03", title: "Pick your battle", body: "A 16-team knockout cup, or a 21-club league season. Either way, you only play your own matches — live." },
+    { n: "04", title: "Beat the odds", body: "The game predicts your finish before a ball is kicked. Overperform it, lift silverware, run it back." },
   ];
 
   return (
@@ -246,7 +303,7 @@ function Features() {
           Built for<br /><span className="text-primary italic">the touchline.</span>
         </h2>
 
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-6 gap-4 md:gap-6 auto-rows-[200px]">
+        <div className="mt-20 grid grid-cols-1 md:grid-cols-6 gap-4 md:gap-6 auto-rows-[minmax(200px,auto)]">
           <TiltCard className="md:col-span-4 md:row-span-2 bg-gradient-to-br from-primary/20 via-surface to-surface">
             <FeatureDraft />
           </TiltCard>
@@ -297,6 +354,19 @@ function TiltCard({ children, className = "" }: { children: React.ReactNode; cla
 }
 
 function FeatureDraft() {
+  // A fresh pack every visit: always 1 icon, 2 golds, 2 silvers/bronzes.
+  // Client-only so SSR markup stays deterministic.
+  const [showcase, setShowcase] = useState<Player[]>([]);
+  useEffect(() => {
+    const icons = ALL_PLAYERS.filter((p) => p.overall >= 88);
+    const golds = ALL_PLAYERS.filter((p) => p.overall >= 80 && p.overall < 88);
+    const lower = ALL_PLAYERS.filter((p) => p.overall < 80);
+    setShowcase(shuffle([
+      ...shuffle(icons).slice(0, 1),
+      ...shuffle(golds).slice(0, 2),
+      ...shuffle(lower).slice(0, 2),
+    ]));
+  }, []);
   return (
     <div className="relative h-full flex flex-col justify-between">
       <div>
@@ -304,39 +374,16 @@ function FeatureDraft() {
         <h3 className="mt-4 font-display text-5xl md:text-6xl leading-[0.9]">Card packs,<br />without the wallet.</h3>
         <p className="mt-4 text-muted-foreground max-w-md">Five eligible players. One pick. Rarity tiers glow gold, silver, bronze — Icons burn purple.</p>
       </div>
-      <div className="flex gap-3 mt-8">
-        {[
-          { r: "94", n: "HAALAND", pos: "ST", tier: "gold", face: haalandAsset.url },
-          { r: "89", n: "SAKA", pos: "RW", tier: "gold", face: sakaAsset.url },
-          { r: "82", n: "MARTINELLI", pos: "LW", tier: "silver", face: martinelliAsset.url },
-          { r: "76", n: "MITOMA", pos: "LM", tier: "bronze", face: mitomaAsset.url },
-          { r: "91", n: "SALAH", pos: "RW", tier: "gold", face: salahAsset.url },
-        ].map((p, i) => (
-          <PlayerCard key={i} {...p} delay={i * 0.08} />
+      <div className="flex flex-wrap justify-between gap-3 mt-8 min-h-48">
+        {showcase.map((p, i) => (
+          <motion.div key={p.id} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * 0.08 }}
+            style={{ transform: "translateZ(40px)" }}
+          >
+            <DraftCard player={p} size="md" />
+          </motion.div>
         ))}
       </div>
     </div>
-  );
-}
-
-function PlayerCard({ r, n, pos, tier, face, delay = 0 }: { r: string; n: string; pos: string; tier: string; face?: string; delay?: number }) {
-  const grad = tier === "gold" ? "from-[oklch(0.82_0.16_85)] to-[oklch(0.55_0.15_70)]"
-    : tier === "silver" ? "from-[oklch(0.85_0.01_260)] to-[oklch(0.55_0.008_260)]"
-    : "from-[oklch(0.62_0.13_55)] to-[oklch(0.4_0.1_40)]";
-  return (
-    <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} transition={{ delay }}
-      className={`relative flex-1 aspect-[3/4] max-w-[110px] rounded-lg bg-gradient-to-b ${grad} p-2 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.6)] hover:-translate-y-2 transition-transform overflow-hidden`}
-      style={{ transform: "translateZ(40px)" }}
-    >
-      {face && (
-        <img src={face} alt={n} className="absolute inset-x-0 bottom-6 mx-auto w-[85%] object-contain pointer-events-none mix-blend-luminosity opacity-90" />
-      )}
-      <div className="relative text-black font-display">
-        <div className="text-3xl leading-none">{r}</div>
-        <div className="text-[10px] font-bold">{pos}</div>
-      </div>
-      <div className="absolute inset-x-2 bottom-2 text-black text-[10px] font-black uppercase tracking-tight truncate z-10">{n}</div>
-    </motion.div>
   );
 }
 
@@ -357,8 +404,8 @@ function FeatureBracket() {
     <div className="h-full flex flex-col justify-between">
       <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-[oklch(0.82_0.16_85)]"><Trophy className="w-3.5 h-3.5" /> Bracket</div>
       <div>
-        <h3 className="font-display text-3xl md:text-4xl leading-[0.9]">16 teams.<br />One trophy.</h3>
-        <p className="mt-2 text-sm text-muted-foreground">UCL-style draw. Upsets happen.</p>
+        <h3 className="font-display text-3xl md:text-4xl leading-[0.9]">Cup or league.<br />Your call.</h3>
+        <p className="mt-2 text-sm text-muted-foreground">16-team knockout, or a 21-club season. Upsets happen.</p>
       </div>
     </div>
   );
@@ -393,7 +440,7 @@ function StatBox({ label, value }: { label: string; value: string }) {
 /* ---------------- STATS ---------------- */
 function Stats() {
   const stats = [
-    { v: 620, s: "+", l: "Real players in the pool" },
+    { v: 500, s: "+", l: "Real players in the pool" },
     { v: 24881, l: "Squads drafted this week" },
     { v: 16, l: "Teams in every bracket" },
     { v: 93, s: "%", l: "Gaffers say they'll draft again" },
@@ -495,7 +542,7 @@ function Faq() {
     { q: "Where does the player data come from?", a: "Every current Premier League squad — real names, real attributes, live overall ratings." },
     { q: "Can I reroll a bad pick?", a: "No. Five options, one choice, you live with it. Swap between XI and bench as much as you like." },
     { q: "Does the match actually simulate or is it random?", a: "There's a real engine — squad quality, tactics, formation fit, opponent reputation all feed in. Randomness sits on top so upsets are possible." },
-    { q: "Will there be more leagues?", a: "Premier League first. La Liga and Serie A once we've polished the loop." },
+    { q: "Cup or league — what's the difference?", a: "The cup is a 16-team knockout: lose once and the whole run is wiped. The league puts you and all twenty clubs in one table, everyone faced once, draws allowed — most points takes the title." },
     { q: "Do I need an account?", a: "Not for the first draft. Save your history once you want to track streaks." },
   ];
   const [open, setOpen] = useState<number | null>(0);
@@ -540,7 +587,7 @@ function Footer() {
             <h2 className="mt-3 font-display text-5xl md:text-7xl leading-[0.9]">
               The touchline<br /><span className="text-primary italic">is calling.</span>
             </h2>
-            <a href="/draft" className="mt-8 group inline-flex items-center gap-3 rounded-full bg-primary px-8 py-4 font-semibold text-primary-foreground shadow-[0_20px_60px_-20px_var(--crimson)] hover:shadow-[0_25px_80px_-15px_var(--crimson)] transition-all">
+            <a href="/home" className="mt-8 group inline-flex items-center gap-3 rounded-full bg-primary px-8 py-4 font-semibold text-primary-foreground shadow-[0_20px_60px_-20px_var(--crimson)] hover:shadow-[0_25px_80px_-15px_var(--crimson)] transition-all">
               Start your draft
               <ArrowUpRight className="w-5 h-5 group-hover:rotate-12 transition" />
             </a>

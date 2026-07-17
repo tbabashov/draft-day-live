@@ -11,7 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TournamentRouteImport } from './routes/tournament'
 import { Route as TacticsRouteImport } from './routes/tactics'
+import { Route as LeagueRouteImport } from './routes/league'
+import { Route as HomeRouteImport } from './routes/home'
+import { Route as HistoryRouteImport } from './routes/history'
 import { Route as DraftRouteImport } from './routes/draft'
+import { Route as CompeteRouteImport } from './routes/compete'
 import { Route as IndexRouteImport } from './routes/index'
 
 const TournamentRoute = TournamentRouteImport.update({
@@ -24,9 +28,29 @@ const TacticsRoute = TacticsRouteImport.update({
   path: '/tactics',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LeagueRoute = LeagueRouteImport.update({
+  id: '/league',
+  path: '/league',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DraftRoute = DraftRouteImport.update({
   id: '/draft',
   path: '/draft',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompeteRoute = CompeteRouteImport.update({
+  id: '/compete',
+  path: '/compete',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,34 +61,75 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/compete': typeof CompeteRoute
   '/draft': typeof DraftRoute
+  '/history': typeof HistoryRoute
+  '/home': typeof HomeRoute
+  '/league': typeof LeagueRoute
   '/tactics': typeof TacticsRoute
   '/tournament': typeof TournamentRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/compete': typeof CompeteRoute
   '/draft': typeof DraftRoute
+  '/history': typeof HistoryRoute
+  '/home': typeof HomeRoute
+  '/league': typeof LeagueRoute
   '/tactics': typeof TacticsRoute
   '/tournament': typeof TournamentRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/compete': typeof CompeteRoute
   '/draft': typeof DraftRoute
+  '/history': typeof HistoryRoute
+  '/home': typeof HomeRoute
+  '/league': typeof LeagueRoute
   '/tactics': typeof TacticsRoute
   '/tournament': typeof TournamentRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/draft' | '/tactics' | '/tournament'
+  fullPaths:
+    | '/'
+    | '/compete'
+    | '/draft'
+    | '/history'
+    | '/home'
+    | '/league'
+    | '/tactics'
+    | '/tournament'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/draft' | '/tactics' | '/tournament'
-  id: '__root__' | '/' | '/draft' | '/tactics' | '/tournament'
+  to:
+    | '/'
+    | '/compete'
+    | '/draft'
+    | '/history'
+    | '/home'
+    | '/league'
+    | '/tactics'
+    | '/tournament'
+  id:
+    | '__root__'
+    | '/'
+    | '/compete'
+    | '/draft'
+    | '/history'
+    | '/home'
+    | '/league'
+    | '/tactics'
+    | '/tournament'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CompeteRoute: typeof CompeteRoute
   DraftRoute: typeof DraftRoute
+  HistoryRoute: typeof HistoryRoute
+  HomeRoute: typeof HomeRoute
+  LeagueRoute: typeof LeagueRoute
   TacticsRoute: typeof TacticsRoute
   TournamentRoute: typeof TournamentRoute
 }
@@ -85,11 +150,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TacticsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/league': {
+      id: '/league'
+      path: '/league'
+      fullPath: '/league'
+      preLoaderRoute: typeof LeagueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/draft': {
       id: '/draft'
       path: '/draft'
       fullPath: '/draft'
       preLoaderRoute: typeof DraftRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compete': {
+      id: '/compete'
+      path: '/compete'
+      fullPath: '/compete'
+      preLoaderRoute: typeof CompeteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,10 +197,24 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CompeteRoute: CompeteRoute,
   DraftRoute: DraftRoute,
+  HistoryRoute: HistoryRoute,
+  HomeRoute: HomeRoute,
+  LeagueRoute: LeagueRoute,
   TacticsRoute: TacticsRoute,
   TournamentRoute: TournamentRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

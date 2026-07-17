@@ -2,16 +2,22 @@
 import { INITIAL_PLAYERS } from "@/data/players";
 
 export type Attrs = { pace: number; shooting: number; passing: number; dribbling: number; defending: number; physical: number };
+export type GkAttrs = { diving: number; handling: number; kicking: number; reflexes: number; speed: number; positioning: number };
+
+export function isGkAttrs(a: Attrs | GkAttrs): a is GkAttrs {
+  return "diving" in a;
+}
 
 export type Player = {
   id: string;
   name: { first: string; last: string; display: string };
-  nationality: string;
+  club: string;
+  clubId: string;
   age: number;
   position: string;
   overall: number;
   potential: number;
-  attributes: Attrs;
+  attributes: Attrs | GkAttrs;
 };
 
 export const ALL_PLAYERS: Player[] = INITIAL_PLAYERS as Player[];
@@ -85,6 +91,11 @@ export function eligibleFor(slot: SlotKind, pool: Player[]): Player[] {
 
 // Formation: array of {id, kind, x%, y%}. Pitch coords: 0-100 (attack up).
 export type Slot = { id: string; kind: SlotKind; x: number; y: number };
+
+// Compress formation y-coords slightly so cards sit inside the compact pitch.
+export function pitchY(y: number): number {
+  return y * 0.9 + 3;
+}
 
 export const FORMATION_433: Slot[] = [
   { id: "gk", kind: "GK", x: 50, y: 92 },

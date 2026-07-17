@@ -1,16 +1,30 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, RotateCcw, Sparkles, Crown } from "lucide-react";
+import { ArrowLeft, ArrowRight, Sparkles, Crown, Home } from "lucide-react";
 import {
-  ALL_PLAYERS, FORMATION_433, TIER_STYLES, tierOf, shortName,
+  ALL_PLAYERS, TIER_STYLES, tierOf, shortName, pitchY,
   type Player, type Slot, type SlotKind,
 } from "@/lib/draft-utils";
 import {
   FORMATIONS, ROLES, DEFAULT_ROLE, PRESETS, DEFAULT_TACTICS,
-  remapXi, familiarity, slotFitScore,
+  remapXi, slotFitScore, effectiveOverall, squadStrength,
   type FormationId, type TacticsSettings,
 } from "@/lib/tactics-utils";
+import { RestartRunButton } from "@/components/RestartRun";
+import { UnavailableStrip } from "@/components/UnavailableStrip";
+import { loadSquadStatus, isUnavailable, type SquadStatus } from "@/lib/squad-status";
+import { activeCompetition } from "@/lib/run-state";
+import { btnGhost, btnPrimary } from "@/lib/ui";
+
+const BENCH_SLOTS: Slot[] = Array.from({ length: 7 }, (_, i) => ({ id: `bench-${i}`, kind: "ANY" as SlotKind, x: 0, y: 0 }));
+
+// Which player positions may fill a slot (keepers stay in goal; outfield is free).
+function fits(p: Player, kind: SlotKind): boolean {
+  if (kind === "ANY") return true;
+  if (kind === "GK") return p.position === "GK";
+  return p.position !== "GK";
+}
 
 export const Route = createFileRoute("/tactics")({
   head: () => ({
@@ -29,54 +43,68 @@ const TACTICS_KEY = "gaffer.tactics.v1";
 type Assignments = Record<string, Player | undefined>;
 
 function TacticsPage() {
-  const [xi, setXi] = useState<Player[]>([]);
+  const [assignments, setAssignments] = useState<Assignments>({});
+  const [formation, setFormation] = useState<FormationId>("4-3-3");
   const [tactics, setTactics] = useState<TacticsSettings>(DEFAULT_TACTICS);
   const [roles, setRoles] = useState<Record<string, string>>({});
   const [captainId, setCaptainId] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [dragFrom, setDragFrom] = useState<Slot | null>(null);
+  const [status, setStatus] = useState<SquadStatus>(() => loadSquadStatus());
   const [ready, setReady] = useState(false);
+  const realSquad = useRef(false); // true once a genuine drafted XI is loaded
 
-  // Load draft XI + any saved tactics.
+  // Load the drafted squad (formation is locked to the draft for the run)
+  // + any saved tactics.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    let xiList: Player[] = [];
+    let f: FormationId = "4-3-3";
+    let loaded: Assignments = {};
+    let draftCaptain: string | null = null;
     try {
       const raw = window.localStorage.getItem(DRAFT_KEY);
       if (raw) {
-        const parsed = JSON.parse(raw) as { assignments?: Assignments };
-        if (parsed.assignments) {
-          xiList = FORMATION_433.map((s) => parsed.assignments![s.id]).filter(Boolean) as Player[];
-        }
+        const parsed = JSON.parse(raw) as { formation?: FormationId; assignments?: Assignments; captainId?: string };
+        if (parsed.formation && FORMATIONS[parsed.formation]) f = parsed.formation;
+        if (parsed.assignments) loaded = parsed.assignments;
+        if (parsed.captainId) draftCaptain = parsed.captainId;
       }
     } catch {}
-    // Fallback demo XI so page never feels broken.
-    if (xiList.length < 11) {
+    const slots = FORMATIONS[f];
+    const filledCount = slots.filter((s) => loaded[s.id]).length;
+    realSquad.current = filledCount >= 11;
+    setStatus(loadSquadStatus());
+    if (filledCount < 11) {
+      // Fallback demo XI so page never feels broken.
       const byPos = (pos: string) => ALL_PLAYERS.filter((p) => p.position === pos).sort((a, b) => b.overall - a.overall);
       const demo = [
         byPos("GK")[0], byPos("LB")[0], byPos("CB")[0], byPos("CB")[1], byPos("RB")[0],
         byPos("CM")[0], byPos("CM")[1], byPos("CM")[2],
         byPos("LW")[0], byPos("ST")[0], byPos("RW")[0],
       ].filter(Boolean) as Player[];
-      xiList = demo;
+      loaded = remapXi(demo, slots);
     }
-    setXi(xiList);
+    setFormation(f);
+    setAssignments(loaded);
+    if (draftCaptain) setCaptainId(draftCaptain);
 
     try {
       const rawT = window.localStorage.getItem(TACTICS_KEY);
       if (rawT) {
         const parsed = JSON.parse(rawT);
-        if (parsed.tactics) setTactics({ ...DEFAULT_TACTICS, ...parsed.tactics });
+        if (parsed.tactics) setTactics({ ...DEFAULT_TACTICS, ...parsed.tactics, formation: f });
+        else setTactics((t) => ({ ...t, formation: f }));
         if (parsed.roles) setRoles(parsed.roles);
         if (parsed.captainId) setCaptainId(parsed.captainId);
+      } else {
+        setTactics((t) => ({ ...t, formation: f }));
       }
     } catch {}
     setReady(true);
   }, []);
 
-  const slots = FORMATIONS[tactics.formation];
-
-  // Remap XI to current formation slots.
-  const assignments = useMemo(() => remapXi(xi, slots), [xi, slots]);
+  const slots = FORMATIONS[formation];
+  const xi = useMemo(() => slots.map((s) => assignments[s.id]).filter(Boolean) as Player[], [slots, assignments]);
 
   // Default roles per slot when formation changes / first load.
   useEffect(() => {
@@ -94,7 +122,7 @@ function TacticsPage() {
     if (best) setCaptainId(best.id);
   }, [xi, captainId]);
 
-  // Persist.
+  // Persist tactics/roles/captain.
   useEffect(() => {
     if (!ready || typeof window === "undefined") return;
     try {
@@ -102,68 +130,144 @@ function TacticsPage() {
     } catch {}
   }, [tactics, roles, captainId, ready]);
 
-  const fit = familiarity(assignments, slots);
-  const avg = xi.length ? Math.round(xi.reduce((a, b) => a + b.overall, 0) / xi.length) : 0;
-  const teamRating = Math.round(avg * (0.85 + fit * 0.0015)); // familiarity boosts up to ~+15%
+  // Persist squad rearrangements back to the draft so they reach the pitch.
+  useEffect(() => {
+    if (!ready || !realSquad.current || typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(DRAFT_KEY);
+      const prev = raw ? JSON.parse(raw) : {};
+      const usedIds = Object.values(assignments).filter(Boolean).map((p) => (p as Player).id);
+      window.localStorage.setItem(DRAFT_KEY, JSON.stringify({ ...prev, assignments, captainId: captainId ?? prev.captainId, usedIds }));
+    } catch {}
+  }, [assignments, captainId, ready]);
+
+  const allSlots = useMemo(() => [...slots, ...BENCH_SLOTS], [slots]);
+
+  function canMove(source: Slot, target: Slot): boolean {
+    if (source.id === target.id) return false;
+    const a = assignments[source.id];
+    if (!a) return false;
+    const b = assignments[target.id];
+    const aFitsTarget = target.kind === "ANY" || fits(a, target.kind);
+    const bFitsSource = !b || source.kind === "ANY" || fits(b, source.kind);
+    return aFitsTarget && bFitsSource;
+  }
+  function move(source: Slot, target: Slot) {
+    if (!canMove(source, target)) return;
+    const a = assignments[source.id];
+    const b = assignments[target.id];
+    setAssignments((s) => ({ ...s, [source.id]: b, [target.id]: a }));
+  }
+  const dnd = (slot: Slot) => ({
+    draggable: !!assignments[slot.id],
+    onDragStart: (e: React.DragEvent) => {
+      if (!assignments[slot.id]) return;
+      e.dataTransfer.effectAllowed = "move";
+      setDragFrom(slot);
+    },
+    onDragEnd: () => setDragFrom(null),
+    onDragOver: (e: React.DragEvent) => { if (dragFrom && canMove(dragFrom, slot)) e.preventDefault(); },
+    onDrop: (e: React.DragEvent) => { e.preventDefault(); if (dragFrom) move(dragFrom, slot); setDragFrom(null); },
+  });
+  const dropState = (slot: Slot): "valid" | "invalid" | undefined => {
+    if (!dragFrom || dragFrom.id === slot.id) return undefined;
+    return canMove(dragFrom, slot) ? "valid" : "invalid";
+  };
+  const unavailable = (p?: Player) => !!p && isUnavailable(status, p.id);
+
+  // If a competition is already under way we're in "manage" mode, reached via
+  // the in-run Manage team button rather than the initial draft flow. Read after
+  // mount so the server render (no localStorage) doesn't mismatch on hydration.
+  const [manageMode, setManageMode] = useState<"cup" | "league" | null>(null);
+  useEffect(() => setManageMode(activeCompetition()), []);
+  const backTo = manageMode === "league" ? "/league" : "/tournament";
+
+  const { rating: teamRating, fit } = squadStrength(assignments, slots);
+  const baseRating = xi.length ? Math.round(xi.reduce((a, b) => a + b.overall, 0) / xi.length) : 0;
 
   function applyPreset(id: string) {
     const p = PRESETS.find((x) => x.id === id);
     if (!p) return;
     setTactics((t) => ({ ...t, ...p.settings }));
   }
-  function resetAll() {
-    setTactics(DEFAULT_TACTICS);
-    setRoles({});
-    setCaptainId(null);
-  }
-
   return (
     <div className="min-h-screen bg-background text-foreground grain">
       {/* Top bar */}
       <header className="sticky top-0 z-40 border-b border-border backdrop-blur-xl bg-background/70">
         <div className="mx-auto max-w-[1600px] px-6 py-4 flex items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <Link to="/draft" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition">
-              <ArrowLeft className="w-4 h-4" /> Draft
-            </Link>
-            <div className="w-px h-6 bg-border" />
-            <div className="font-display text-2xl tracking-widest">TACTICS</div>
-            <div className="hidden md:flex items-center gap-2 rounded-full bg-surface border border-border px-3 py-1 font-mono text-xs text-muted-foreground">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary ticker-dot" />
-              Step 3 · Deploy
-            </div>
+            {!manageMode && (
+              <>
+                <Link to="/draft" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition">
+                  <ArrowLeft className="w-4 h-4" /> Draft
+                </Link>
+                <div className="w-px h-6 bg-border" />
+              </>
+            )}
+            <div className="font-display text-2xl tracking-widest">{manageMode ? "MANAGE TEAM" : "TACTICS"}</div>
+            {!manageMode && (
+              <div className="hidden md:flex items-center gap-2 rounded-full bg-surface border border-border px-3 py-1 font-mono text-xs text-muted-foreground">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary ticker-dot" />
+                Step 3 · Deploy
+              </div>
+            )}
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-start gap-6">
             <div className="text-right">
               <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Familiarity</div>
-              <div className="font-display text-2xl leading-none">
-                {fit}<span className="text-muted-foreground text-base">%</span>
+              <div className="flex items-baseline justify-end gap-2">
+                <div className="font-display text-3xl leading-none">{fit}<span className="text-muted-foreground text-lg leading-none">%</span></div>
+              </div>
+              <div className="mt-1 h-1 w-28 rounded-full bg-surface-2 overflow-hidden ml-auto">
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{ background: fit >= 90 ? "oklch(0.75 0.19 145)" : fit >= 70 ? "oklch(0.8 0.16 85)" : "oklch(0.63 0.24 25)" }}
+                  animate={{ width: `${Math.max(4, fit)}%` }}
+                  transition={{ type: "spring", stiffness: 120, damping: 20 }}
+                />
               </div>
             </div>
             <div className="text-right">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Team rating</div>
-              <div className="font-display text-3xl leading-none text-primary">{teamRating || "—"}</div>
+              <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Squad strength</div>
+              <div className="flex items-baseline justify-end gap-2">
+                {teamRating > 0 && teamRating < baseRating && (
+                  <span className="font-mono text-xs text-muted-foreground line-through">{baseRating}</span>
+                )}
+                <div className="font-display text-3xl leading-none text-primary">{teamRating || "—"}</div>
+              </div>
+              <div className="mt-1 h-1 w-28 rounded-full bg-surface-2 overflow-hidden ml-auto">
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{ background: fit >= 90 ? "oklch(0.75 0.19 145)" : fit >= 70 ? "oklch(0.8 0.16 85)" : "oklch(0.63 0.24 25)" }}
+                  animate={{ width: `${Math.max(4, ((teamRating - 55) / 45) * 100)}%` }}
+                  transition={{ type: "spring", stiffness: 120, damping: 20 }}
+                />
+              </div>
             </div>
-            <button onClick={resetAll} title="Reset tactics" className="grid place-items-center w-10 h-10 rounded-full border border-border hover:border-primary hover:text-primary transition">
-              <RotateCcw className="w-4 h-4" />
-            </button>
-            <Link
-              to="/tournament"
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] hover:brightness-110"
-            >
-              Enter tournament <ArrowRight className="w-4 h-4" />
+            <Link to="/home" title="Home" className={btnGhost}>
+              <Home className="w-3.5 h-3.5" /> Home
             </Link>
+            <RestartRunButton />
+            {manageMode ? (
+              <Link to={backTo} className={btnPrimary}>
+                Go back <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            ) : (
+              <Link to="/compete" className={btnPrimary}>
+                Choose competition <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            )}
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1600px] px-6 py-8 grid grid-cols-1 lg:grid-cols-[1fr,420px] gap-8">
+      <main className="mx-auto max-w-[1600px] px-6 py-8 grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-8">
         {/* Pitch */}
         <section>
           <div className="mb-3 flex items-baseline justify-between">
             <h2 className="font-display text-3xl">Deploy your XI</h2>
             <div className="font-mono text-xs text-muted-foreground uppercase tracking-widest">
-              {tactics.formation} · click a player to set role
+              {formation} · drag to swap · click to set role
             </div>
           </div>
           <Pitch>
@@ -179,11 +283,28 @@ function TacticsPage() {
                   captain={p?.id === captainId}
                   fit={fitScore}
                   selected={selectedSlot === slot.id}
+                  unavailable={unavailable(p)}
+                  drop={dropState(slot)}
+                  dnd={dnd(slot)}
                   onClick={() => setSelectedSlot((s) => (s === slot.id ? null : slot.id))}
                 />
               );
             })}
           </Pitch>
+
+          {/* Bench — drag anyone up into the XI (e.g. to cover an injury) */}
+          <div className="mt-5">
+            <div className="mb-2 flex items-baseline justify-between">
+              <h3 className="font-display text-2xl">Bench</h3>
+              <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">Drag onto the pitch to sub</div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {BENCH_SLOTS.map((slot) => (
+                <BenchSlot key={slot.id} slot={slot} player={assignments[slot.id]}
+                  unavailable={unavailable(assignments[slot.id])} drop={dropState(slot)} dnd={dnd(slot)} />
+              ))}
+            </div>
+          </div>
 
           {/* Selected slot editor */}
           <AnimatePresence mode="popLayout">
@@ -204,7 +325,12 @@ function TacticsPage() {
                     </div>
                     <div>
                       <div className="font-display text-2xl">{p.name.display}</div>
-                      <div className="font-mono text-[11px] text-muted-foreground">{slot.kind} · fit {slotFitScore(p, slot.kind)}%</div>
+                      <div className="font-mono text-[11px] text-muted-foreground">
+                        {slot.kind} · fit {slotFitScore(p, slot.kind)}% · effective{" "}
+                        <span className={effectiveOverall(p, slot.kind) < p.overall ? "text-rose-400" : "text-emerald-400"}>
+                          {effectiveOverall(p, slot.kind)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div className="flex-1 min-w-[240px]">
@@ -239,21 +365,13 @@ function TacticsPage() {
 
         {/* Control panel */}
         <aside className="space-y-6">
-          {/* Formation */}
+          <div><UnavailableStrip /></div>
+
+          {/* Formation — drafted, locked for the run */}
           <Panel title="Formation">
-            <div className="grid grid-cols-3 gap-2">
-              {(Object.keys(FORMATIONS) as FormationId[]).map((f) => {
-                const active = tactics.formation === f;
-                return (
-                  <button
-                    key={f}
-                    onClick={() => setTactics((t) => ({ ...t, formation: f }))}
-                    className={`py-3 rounded-lg border font-display text-lg tracking-wider transition ${active ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-primary/60"}`}
-                  >
-                    {f}
-                  </button>
-                );
-              })}
+            <div className="flex items-center justify-between rounded-lg border border-border bg-surface-2 px-4 py-3">
+              <div className="font-display text-2xl tracking-wider">{formation}</div>
+              <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Drafted · locked for this run</div>
             </div>
           </Panel>
 
@@ -338,74 +456,125 @@ function Slider({ label, left, right, value, onChange }: {
 function Pitch({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="relative w-full aspect-[10/11] rounded-2xl overflow-hidden border border-border"
+      className="relative w-full max-w-[860px] mx-auto aspect-[10/8] rounded-2xl overflow-hidden border border-border"
       style={{ background: "radial-gradient(ellipse at top, oklch(0.28 0.09 145) 0%, oklch(0.18 0.06 145) 60%, oklch(0.14 0.04 145) 100%)" }}
     >
       <div className="absolute inset-0 opacity-20"
-        style={{ background: "repeating-linear-gradient(0deg, transparent 0 60px, rgba(255,255,255,0.06) 60px 120px)" }} />
-      <svg viewBox="0 0 100 110" className="absolute inset-0 w-full h-full text-white/25" preserveAspectRatio="none">
-        <rect x="2" y="2" width="96" height="106" fill="none" stroke="currentColor" strokeWidth="0.3" />
-        <line x1="2" y1="55" x2="98" y2="55" stroke="currentColor" strokeWidth="0.3" />
-        <circle cx="50" cy="55" r="9" fill="none" stroke="currentColor" strokeWidth="0.3" />
-        <circle cx="50" cy="55" r="0.6" fill="currentColor" />
-        <rect x="25" y="2" width="50" height="14" fill="none" stroke="currentColor" strokeWidth="0.3" />
-        <rect x="38" y="2" width="24" height="6" fill="none" stroke="currentColor" strokeWidth="0.3" />
-        <rect x="25" y="94" width="50" height="14" fill="none" stroke="currentColor" strokeWidth="0.3" />
-        <rect x="38" y="102" width="24" height="6" fill="none" stroke="currentColor" strokeWidth="0.3" />
+        style={{ background: "repeating-linear-gradient(0deg, transparent 0 44px, rgba(255,255,255,0.06) 44px 88px)" }} />
+      <svg viewBox="0 0 100 80" className="absolute inset-0 w-full h-full text-white/25" preserveAspectRatio="none">
+        <rect x="1.5" y="1.5" width="97" height="77" fill="none" stroke="currentColor" strokeWidth="0.3" />
+        <line x1="1.5" y1="40" x2="98.5" y2="40" stroke="currentColor" strokeWidth="0.3" />
+        <circle cx="50" cy="40" r="8" fill="none" stroke="currentColor" strokeWidth="0.3" />
+        <circle cx="50" cy="40" r="0.6" fill="currentColor" />
+        <rect x="21" y="1.5" width="58" height="12.5" fill="none" stroke="currentColor" strokeWidth="0.3" />
+        <rect x="36" y="1.5" width="28" height="4.5" fill="none" stroke="currentColor" strokeWidth="0.3" />
+        <circle cx="50" cy="10" r="0.5" fill="currentColor" />
+        <path d="M 43 14 A 8 8 0 0 0 57 14" fill="none" stroke="currentColor" strokeWidth="0.3" />
+        <rect x="21" y="66" width="58" height="12.5" fill="none" stroke="currentColor" strokeWidth="0.3" />
+        <rect x="36" y="74" width="28" height="4.5" fill="none" stroke="currentColor" strokeWidth="0.3" />
+        <circle cx="50" cy="70" r="0.5" fill="currentColor" />
+        <path d="M 43 66 A 8 8 0 0 1 57 66" fill="none" stroke="currentColor" strokeWidth="0.3" />
+        <path d="M 1.5 4.5 A 3 3 0 0 0 4.5 1.5" fill="none" stroke="currentColor" strokeWidth="0.3" />
+        <path d="M 95.5 1.5 A 3 3 0 0 0 98.5 4.5" fill="none" stroke="currentColor" strokeWidth="0.3" />
+        <path d="M 98.5 75.5 A 3 3 0 0 0 95.5 78.5" fill="none" stroke="currentColor" strokeWidth="0.3" />
+        <path d="M 4.5 78.5 A 3 3 0 0 0 1.5 75.5" fill="none" stroke="currentColor" strokeWidth="0.3" />
       </svg>
       {children}
     </div>
   );
 }
 
-function PitchSlot({ slot, player, role, captain, fit, selected, onClick }: {
-  slot: Slot; player?: Player; role: string; captain: boolean; fit: number; selected: boolean; onClick: () => void;
+type DndHandlers = {
+  draggable: boolean;
+  onDragStart: (e: React.DragEvent) => void;
+  onDragEnd: () => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDrop: (e: React.DragEvent) => void;
+};
+
+function PitchSlot({ slot, player, role, captain, fit, selected, unavailable, drop, dnd, onClick }: {
+  slot: Slot; player?: Player; role: string; captain: boolean; fit: number; selected: boolean;
+  unavailable?: boolean; drop?: "valid" | "invalid"; dnd: DndHandlers; onClick: () => void;
 }) {
   const fitColor = fit >= 90 ? "text-emerald-400" : fit >= 70 ? "text-amber-300" : "text-rose-400";
   return (
-    <motion.button
-      layout
+    <button
       onClick={onClick}
-      className="absolute -translate-x-1/2 -translate-y-1/2 group"
-      style={{ left: `${slot.x}%`, top: `${slot.y}%` }}
-      initial={false}
-      animate={{ scale: selected ? 1.06 : 1 }}
-      transition={{ type: "spring", stiffness: 260, damping: 20 }}
+      {...dnd}
+      className={`absolute -translate-x-1/2 -translate-y-1/2 group transition-transform ${selected ? "scale-105" : ""} ${dnd.draggable ? "cursor-grab active:cursor-grabbing" : ""}`}
+      style={{ left: `${slot.x}%`, top: `${pitchY(slot.y)}%` }}
     >
       {player ? (
-        <div className={`relative ${selected ? "ring-2 ring-primary rounded-xl" : ""}`}>
-          <MiniCard player={player} />
+        <div className={`relative rounded-xl transition ${selected ? "ring-2 ring-primary" : ""} ${drop === "valid" ? "ring-2 ring-accent scale-105" : drop === "invalid" ? "opacity-35" : ""}`}>
+          <MiniCard player={player} kind={slot.kind} />
           {captain && (
             <div className="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-primary grid place-items-center text-primary-foreground shadow-lg">
               <Crown className="w-3.5 h-3.5" />
             </div>
           )}
-          <div className="mt-1.5 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur text-center">
-            <div className="font-mono text-[9px] uppercase tracking-wider text-white/85 truncate max-w-[80px]">{role}</div>
+          {unavailable && (
+            <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-primary grid place-items-center text-primary-foreground text-xs font-bold shadow-lg" title="Injured or suspended">!</div>
+          )}
+          <div className="mt-1 px-1 py-0.5 rounded bg-black/60 backdrop-blur text-center">
+            <div className={`font-mono text-[8px] uppercase tracking-wider truncate max-w-[64px] ${unavailable ? "text-primary" : "text-white/85"}`}>{unavailable ? "unavailable" : role}</div>
             <div className={`font-mono text-[8px] ${fitColor}`}>fit {fit}%</div>
           </div>
         </div>
       ) : (
-        <div className="w-20 aspect-[3/4] rounded-lg border-2 border-dashed border-white/25 grid place-items-center">
+        <div className={`w-16 aspect-[3/4] rounded-lg border-2 border-dashed grid place-items-center ${drop === "valid" ? "border-accent scale-105" : "border-white/25"}`}>
           <div className="text-center">
             <div className="text-2xl font-display text-white/40">·</div>
-            <div className="font-mono text-[9px] text-white/50 uppercase tracking-widest">{slot.kind}</div>
+            <div className="font-mono text-[8px] text-white/50 uppercase tracking-widest">{slot.kind}</div>
           </div>
         </div>
       )}
-    </motion.button>
+    </button>
   );
 }
 
-function MiniCard({ player }: { player: Player }) {
-  const s = TIER_STYLES[tierOf(player.overall)];
+function BenchSlot({ slot, player, unavailable, drop, dnd }: {
+  slot: Slot; player?: Player; unavailable?: boolean; drop?: "valid" | "invalid"; dnd: DndHandlers;
+}) {
   return (
-    <div className={`w-20 aspect-[3/4] rounded-lg bg-gradient-to-b ${s.grad} ${s.ring} p-1.5 relative overflow-hidden`}>
+    <div
+      {...dnd}
+      className={`h-16 rounded-xl border border-dashed border-border bg-surface/50 flex items-center justify-center overflow-hidden relative transition ${drop === "valid" ? "ring-2 ring-accent border-accent" : drop === "invalid" ? "opacity-35" : ""} ${dnd.draggable ? "cursor-grab active:cursor-grabbing" : ""}`}
+    >
+      {player ? (
+        <div className="flex items-center gap-2 p-2 w-full">
+          <div className={`w-9 aspect-[3/4] rounded bg-gradient-to-b ${TIER_STYLES[tierOf(player.overall)].grad} flex flex-col items-center justify-center shrink-0 ${TIER_STYLES[tierOf(player.overall)].text}`}>
+            <div className="font-display text-sm leading-none">{player.overall}</div>
+            <div className="text-[7px] font-bold">{player.position}</div>
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="font-display text-sm leading-tight truncate">{shortName(player)}</div>
+            <div className={`font-mono text-[9px] truncate ${unavailable ? "text-primary" : "text-muted-foreground"}`}>{unavailable ? "unavailable" : player.position}</div>
+          </div>
+        </div>
+      ) : (
+        <div className="font-mono text-[9px] text-muted-foreground uppercase tracking-widest">Empty</div>
+      )}
+    </div>
+  );
+}
+
+function MiniCard({ player, kind }: { player: Player; kind?: SlotKind }) {
+  const s = TIER_STYLES[tierOf(player.overall)];
+  const eff = kind ? effectiveOverall(player, kind) : player.overall;
+  const downgraded = eff < player.overall;
+  return (
+    <div className={`w-16 aspect-[3/4] rounded-lg bg-gradient-to-b ${s.grad} ${s.ring} p-1.5 relative overflow-hidden`}>
       <div className={`font-display leading-none ${s.text}`}>
-        <div className="text-2xl">{player.overall}</div>
+        <div className="flex items-baseline gap-1">
+          <span className="text-xl">{eff}</span>
+          {downgraded && <span className="text-[8px] line-through opacity-60">{player.overall}</span>}
+        </div>
         <div className="text-[8px] font-bold">{player.position}</div>
       </div>
-      <div className={`absolute inset-x-1 bottom-1 text-center font-black uppercase tracking-tight truncate text-[9px] ${s.text}`}>
+      {downgraded && (
+        <div className="absolute top-1 right-1 text-[10px] leading-none" title="Out of position">▼</div>
+      )}
+      <div className={`absolute inset-x-1 bottom-1 text-center font-black uppercase tracking-tight truncate text-[8px] ${s.text}`}>
         {shortName(player)}
       </div>
     </div>
