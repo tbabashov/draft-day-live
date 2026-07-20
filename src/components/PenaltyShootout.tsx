@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import standsImg from "@/assets/penalty-stands.webp";
 
 type Dir = "left" | "center" | "right";
 export type PenAnim = { dir: Dir; keeperDir: Dir; scored: boolean };
@@ -68,7 +69,7 @@ export function PenaltyShootout({ taker, homeAbbr, awayAbbr, home, away, userIsH
 
       {/* shootout scoreboard — own panel, top-left, so it stays readable */}
       {showTracker && (
-        <div className="absolute top-5 left-5 z-20 flex flex-col gap-2 rounded-xl border border-white/15 bg-black/70 backdrop-blur-md px-4 py-3 shadow-2xl">
+        <div className="absolute z-20 flex flex-col gap-2 rounded-xl border border-white/15 bg-black/70 backdrop-blur-md px-4 py-2.5 sm:py-3 shadow-2xl left-1/2 -translate-x-1/2 top-[104px] sm:left-5 sm:translate-x-0 sm:top-5">
           <PenTracker abbr={userIsHome ? homeAbbr : awayAbbr} row={yourRow} you />
           <PenTracker abbr={userIsHome ? awayAbbr : homeAbbr} row={theirRow} />
         </div>
@@ -77,6 +78,26 @@ export function PenaltyShootout({ taker, homeAbbr, awayAbbr, home, away, userIsH
       {/* 3D scene */}
       <div className="absolute inset-0 flex items-center justify-center" style={{ perspective: "1000px", perspectiveOrigin: "50% 38%" }}>
         <div className="relative" style={{ transformStyle: "preserve-3d", width: "min(88vw, 900px)", height: "min(70vh, 560px)" }}>
+
+          {/* Crowd behind the goal. Rendered first so everything sits in front
+              of it, dimmed so the target zones still read clearly, and faded
+              out at the bottom so it melts into the pitch. */}
+          <img
+            src={standsImg}
+            alt=""
+            aria-hidden
+            className="absolute left-1/2 top-0 -translate-x-1/2 pointer-events-none select-none"
+            style={{
+              width: "220%",
+              maxWidth: "none", // preflight caps images at 100%, killing the bleed
+              height: "58%",
+              objectFit: "cover",
+              objectPosition: "center 62%",
+              filter: "brightness(0.3) contrast(1.05) saturate(0.8) blur(0.4px)",
+              maskImage: "linear-gradient(to bottom, black 74%, transparent 100%)",
+              WebkitMaskImage: "linear-gradient(to bottom, black 74%, transparent 100%)",
+            }}
+          />
 
           {/* pitch floor receding to the goal */}
           <div className="absolute left-1/2 bottom-0 -translate-x-1/2"
@@ -94,8 +115,12 @@ export function PenaltyShootout({ taker, homeAbbr, awayAbbr, home, away, userIsH
             <div className="absolute left-1/2 -translate-x-1/2 border-2 border-white/30" style={{ width: "26%", height: "16%", top: "0" }} />
           </div>
 
-          {/* the goal */}
-          <div className="absolute left-1/2 top-[6%] -translate-x-1/2" style={{ width: "72%", height: "46%", transformStyle: "preserve-3d" }}>
+          {/* The goal. Driven by an aspect ratio rather than a % of the scene
+              height: on a phone the scene box is portrait, and a % height made
+              the goal taller than it was wide. A real goal is ~3:1; 2.7 keeps
+              the three target zones comfortably tappable. */}
+          <div className="absolute left-1/2 bottom-[46%] -translate-x-1/2 w-[88%] sm:w-[76%] aspect-[2.7/1]"
+            style={{ transformStyle: "preserve-3d" }}>
             {/* net */}
             <div className="absolute inset-0 rounded-t-[4px] overflow-hidden"
               style={{
@@ -147,7 +172,7 @@ export function PenaltyShootout({ taker, homeAbbr, awayAbbr, home, away, userIsH
             {/* keeper */}
             <motion.div
               className="absolute bottom-[2%] z-10 origin-bottom"
-              style={{ width: "17%" }}
+              style={{ height: "78%" }}
               initial={false}
               animate={anim
                 ? {
@@ -273,7 +298,7 @@ function Keeper({ dir }: { dir: "left" | "center" | "right" | null }) {
   })();
 
   return (
-    <svg viewBox="0 0 100 150" className="w-full h-auto overflow-visible" style={{ filter: "drop-shadow(0 6px 10px rgba(0,0,0,0.45))" }}>
+    <svg viewBox="0 0 100 150" className="h-full w-auto overflow-visible" style={{ filter: "drop-shadow(0 6px 10px rgba(0,0,0,0.45))" }}>
       {/* legs */}
       {diving ? (
         <>
