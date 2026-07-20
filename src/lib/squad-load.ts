@@ -85,53 +85,6 @@ export function buildUserSide(entry: TeamEntry, squad: LoadedSquad, bench: Playe
 
 export type LiveSides = { home: SideInit; away: SideInit; userSide: "home" | "away" };
 
-/* Hand-picked first-choice XIs for select clubs, so they line up the way they
-   actually would rather than by raw overall. Names are slot-ordered for the
-   given formation. */
-const AI_LINEUPS: Record<string, { formation: FormationId; names: string[] }> = {
-  chelsea: {
-    formation: "4-3-3", // gk, lb, lcb, rcb, rb, lcm, cm, rcm, lw, st, rw
-    names: [
-      "Robert Sánchez", "Jorrel Hato", "Levi Colwill", "Trevoh Chalobah", "Reece James",
-      "Enzo Fernández", "Moisés Caicedo", "Cole Palmer", "Jamie Gittens", "João Pedro", "Pedro Neto",
-    ],
-  },
-  mancity: {
-    formation: "4-3-3 Attack", // gk, lb, lcb, rcb, rb, lcm, rcm, cam, lw, st, rw
-    names: [
-      "Gianluigi Donnarumma", "Nico O'Reilly", "Joško Gvardiol", "Marc Guehi", "Mateus Nunes",
-      "Rodri", "Tijjani Reijnders", "Rayan Cherki", "Jérémy Doku", "Erling Haaland", "Antoine Semenyo",
-    ],
-  },
-  manutd: {
-    formation: "4-3-3 Attack", // gk, lb, lcb, rcb, rb, lcm, rcm, cam, lw, st, rw
-    names: [
-      "Senne Lammens", "Patrick Dorgu", "Matthijs de Ligt", "Harry Maguire", "Diogo Dalot",
-      "Kobbie Mainoo", "Casemiro", "Bruno Fernandes", "Amad Diallo", "Matheus Cunha", "Bryan Mbeumo",
-    ],
-  },
-  liverpool: {
-    formation: "4-3-3 Attack", // gk, lb, lcb, rcb, rb, lcm, rcm, cam, lw, st, rw
-    names: [
-      "Alisson Becker", "Milos Kerkez", "Virgil van Dijk", "Ibrahima Konaté", "Jeremie Frimpong",
-      "Alexis Mac Allister", "Ryan Gravenberch", "Dominic Szoboszlai", "Cody Gakpo", "Hugo Ekitike", "Mohamed Salah",
-    ],
-  },
-  arsenal: {
-    formation: "4-3-3 Attack", // gk, lb, lcb, rcb, rb, lcm, rcm, cam, lw, st, rw
-    names: [
-      "David Raya", "Piero Hincapié", "Gabriel", "William Saliba", "Ben White",
-      "Declan Rice", "Martín Zubimendi", "Eberechi Eze", "Gabriel Martinelli", "Viktor Gyökeres", "Bukayo Saka",
-    ],
-  },
-  astonvilla: {
-    formation: "4-3-3 Attack", // gk, lb, lcb, rcb, rb, lcm, rcm, cam, lw, st, rw
-    names: [
-      "Emiliano Martínez", "Lucas Digne", "Ezri Konsa", "Pau Torres", "Matty Cash",
-      "Youri Tielemans", "John McGinn", "Morgan Rogers", "Leon Bailey", "Ollie Watkins", "Emiliano Buendía",
-    ],
-  },
-};
 
 /* Formations the AI is allowed to line up in when it has no fixed XI. The one
    that yields the strongest side (by effective overall) is chosen. */
@@ -206,20 +159,7 @@ export function buildAiSide(entry: TeamEntry): SideInit {
     mentality: seededJitter(entry.id, 1), pressing: seededJitter(entry.id, 2), tempo: seededJitter(entry.id, 3),
   });
 
-  // A fixed XI for this club takes priority (if every named player exists).
-  const preset = AI_LINEUPS[entry.id];
-  if (preset) {
-    const byName = new Map(squad.map((p) => [p.name.display, p]));
-    const xi = preset.names.map((n) => byName.get(n));
-    if (xi.every(Boolean)) {
-      const xiPlayers = xi as Player[];
-      const inXi = new Set(xiPlayers.map((p) => p.id));
-      const bench = squad.filter((p) => !inXi.has(p.id)).slice(0, 7);
-      return { entry, xi: xiPlayers, slots: FORMATIONS[preset.formation], bench, tactics: tactics(preset.formation) };
-    }
-  }
-
-  // No fixed XI: pick the formation that produces the strongest side, and build
+  // Every club picks the formation that produces the strongest side, and builds
   // the best possible line-up within it. Fully deterministic → stable on reload.
   let best: { formation: FormationId; aligned: Player[]; total: number } | null = null;
   for (const formation of AI_FORMATIONS) {

@@ -5,17 +5,17 @@ export const REAL_CLUBS = [
   { id: 'newcastle', name: 'Newcastle United', abbreviation: 'NEW', primaryColour: '#241F20', secondaryColour: '#FFFFFF', stadium: 'Newcastle United Stadium', capacity: 40000, founded: 1900, league: 'Premier League', leagueTier: 1, reputation: 84, balance: 100000000 },
   { id: 'astonvilla', name: 'Aston Villa', abbreviation: 'AST', primaryColour: '#670E36', secondaryColour: '#95BFE5', stadium: 'Aston Villa Stadium', capacity: 40000, founded: 1900, league: 'Premier League', leagueTier: 1, reputation: 82, balance: 60000000 },
   { id: 'brighton', name: 'Brighton & Hove Albion', abbreviation: 'BHA', primaryColour: '#0057B8', secondaryColour: '#FFFFFF', stadium: 'Brighton & Hove Albion Stadium', capacity: 40000, founded: 1900, league: 'Premier League', leagueTier: 1, reputation: 80, balance: 50000000 },
-  { id: 'westham', name: 'West Ham United', abbreviation: 'WHU', primaryColour: '#7A263A', secondaryColour: '#1BB1E7', stadium: 'West Ham United Stadium', capacity: 40000, founded: 1900, league: 'Premier League', leagueTier: 1, reputation: 79, balance: 50000000 },
   { id: 'everton', name: 'Everton', abbreviation: 'EVE', primaryColour: '#003399', secondaryColour: '#FFFFFF', stadium: 'Everton Stadium', capacity: 40000, founded: 1900, league: 'Premier League', leagueTier: 1, reputation: 78, balance: 40000000 },
   { id: 'crystalpalace', name: 'Crystal Palace', abbreviation: 'CRY', primaryColour: '#1B458F', secondaryColour: '#C4122E', stadium: 'Crystal Palace Stadium', capacity: 40000, founded: 1900, league: 'Premier League', leagueTier: 1, reputation: 77, balance: 30000000 },
   { id: 'fulham', name: 'Fulham', abbreviation: 'FUL', primaryColour: '#FFFFFF', secondaryColour: '#000000', stadium: 'Fulham Stadium', capacity: 40000, founded: 1900, league: 'Premier League', leagueTier: 1, reputation: 76, balance: 30000000 },
   { id: 'nottmforest', name: 'Nottingham Forest', abbreviation: 'NFO', primaryColour: '#DD0000', secondaryColour: '#FFFFFF', stadium: 'Nottingham Forest Stadium', capacity: 40000, founded: 1900, league: 'Premier League', leagueTier: 1, reputation: 76, balance: 35000000 },
   { id: 'brentford', name: 'Brentford', abbreviation: 'BRE', primaryColour: '#E30613', secondaryColour: '#FFFFFF', stadium: 'Brentford Stadium', capacity: 40000, founded: 1900, league: 'Premier League', leagueTier: 1, reputation: 77, balance: 30000000 },
   { id: 'bournemouth', name: 'Bournemouth', abbreviation: 'BOU', primaryColour: '#DA291C', secondaryColour: '#000000', stadium: 'Bournemouth Stadium', capacity: 40000, founded: 1900, league: 'Premier League', leagueTier: 1, reputation: 76, balance: 30000000 },
-  { id: 'wolves', name: 'Wolverhampton Wanderers', abbreviation: 'WOL', primaryColour: '#FDB913', secondaryColour: '#000000', stadium: 'Wolverhampton Wanderers Stadium', capacity: 40000, founded: 1900, league: 'Premier League', leagueTier: 1, reputation: 78, balance: 35000000 },
-  { id: 'burnley', name: 'Burnley', abbreviation: 'BUR', primaryColour: '#6C1D45', secondaryColour: '#81D8D0', stadium: 'Turf Moor', capacity: 21944, founded: 1882, league: 'Premier League', leagueTier: 1, reputation: 75, balance: 35000000 },
   { id: 'leeds', name: 'Leeds United', abbreviation: 'LEE', primaryColour: '#FFFFFF', secondaryColour: '#1D428A', stadium: 'Elland Road', capacity: 37890, founded: 1919, league: 'Premier League', leagueTier: 1, reputation: 78, balance: 40000000 },
   { id: 'sunderland', name: 'Sunderland', abbreviation: 'SUN', primaryColour: '#FF0000', secondaryColour: '#FFFFFF', stadium: 'Stadium of Light', capacity: 49000, founded: 1879, league: 'Premier League', leagueTier: 1, reputation: 76, balance: 30000000 },
+  { id: 'hull', name: 'Hull City', abbreviation: 'HUL', primaryColour: '#F5A01A', secondaryColour: '#000000', stadium: 'MKM Stadium', capacity: 25586, founded: 1904, league: 'Premier League', leagueTier: 1, reputation: 74, balance: 30000000 },
+  { id: 'ipswich', name: 'Ipswich Town', abbreviation: 'IPS', primaryColour: '#3A64A3', secondaryColour: '#FFFFFF', stadium: 'Portman Road', capacity: 30311, founded: 1878, league: 'Premier League', leagueTier: 1, reputation: 75, balance: 35000000 },
+  { id: 'coventry', name: 'Coventry City', abbreviation: 'COV', primaryColour: '#4B92DB', secondaryColour: '#FFFFFF', stadium: 'Coventry Building Society Arena', capacity: 32609, founded: 1883, league: 'Premier League', leagueTier: 1, reputation: 74, balance: 30000000 },
 
   { id: "arsenal", name: "Arsenal FC", abbreviation: "ARS", primaryColour: "#EF0107", secondaryColour: "#FFFFFF", stadium: "Emirates Stadium", capacity: 60704, founded: 1886, league: "Premier League", leagueTier: 1, reputation: 88, balance: 120000000 },
   { id: "liverpool", name: "Liverpool FC", abbreviation: "LIV", primaryColour: "#C8102E", secondaryColour: "#FFFFFF", stadium: "Anfield", capacity: 61276, founded: 1892, league: "Premier League", leagueTier: 1, reputation: 89, balance: 110000000 },
@@ -177,7 +177,6 @@ const ARSENAL_RAW = `1 David Raya GK TBD 29 87
 19 Bukayo Saka RW TBD 23 88
 20 Eberechi Eze CAM TBD 26 83
 21 Gabriel Martinelli LW TBD 23 84
-22 Leandro Trossard LW TBD 30 82
 23 Noni Madueke RW TBD 23 80
 24 Ethan Nwaneri CAM TBD 18 75
 25 Gabriel Jesus ST TBD 27 82
@@ -200,7 +199,6 @@ const ASTONVILLA_RAW = `1 Emiliano Martínez GK TBD 32 85
 10 Ross Barkley CM TBD 31 77
 11 John McGinn CM TBD 30 80
 12 Boubacar Kamara CDM TBD 25 81
-13 Youri Tielemans CM TBD 28 85
 14 Amadou Onana CM TBD 23 82
 15 Leon Bailey LW TBD 27 80
 16 Morgan Rogers CAM TBD 22 83
@@ -217,8 +215,7 @@ const ASTONVILLA_RAW = `1 Emiliano Martínez GK TBD 32 85
 27 Oliwier Zych GK TBD 22 64
 28 Kosta Nedeljkovic RB TBD 20 73
 29 Lamare Bogarde CDM TBD 22 71
-30 Alysson RW TBD 20 70
-31 Lewis Dobbin LM TBD 23 69`;
+30 Alysson RW TBD 20 70`;
 
 const BOURNEMOUTH_RAW = `1 Djordje Petrovic GK TBD 25 80
 2 Fraser Forster GK TBD 37 75
@@ -237,7 +234,6 @@ const BOURNEMOUTH_RAW = `1 Djordje Petrovic GK TBD 25 80
 15 Evanilson ST TBD 25 80
 16 Justin Kluivert LW TBD 25 78
 17 Enes Ünal ST TBD 27 76
-18 Keane Lewis-Potter LW TBD 23 72
 19 Dominic Sadi CM TBD 21 65
 20 Ben Doak RW TBD 19 68
 21 Alex Jimenez RB TBD 20 74
@@ -249,7 +245,8 @@ const BOURNEMOUTH_RAW = `1 Djordje Petrovic GK TBD 25 80
 27 Matai Akinmboni CB TBD 19 71
 28 Alex Tóth CAM TBD 20 75
 29 Daniel Jebbison ST TBD 22 70
-30 Rayan RW TBD 19 76`;
+30 Rayan RW TBD 19 76
+50 Alvaro Rodriguez ST TBD 22 76`;
 
 const BRENTFORD_RAW = `1 Caoimhín Kelleher GK TBD 26 83
 2 Hákon Valdimarsson GK TBD 22 68
@@ -292,24 +289,19 @@ const BRENTFORD_RAW = `1 Caoimhín Kelleher GK TBD 26 83
 const BRIGHTON_RAW = `1 Bart Verbruggen GK TBD 22 82
 2 Jason Steele GK TBD 33 75
 3 Carl Rushworth GK TBD 23 71
-4 Joel Veltman RB TBD 33 75
 5 Lewis Dunk CB TBD 33 78
-6 Jan Paul van Hecke CB TBD 24 79
 8 Maxim De Cuyper LB TBD 24 78
 9 Igor Julio CB TBD 26 76
-10 Adam Webster CB TBD 30 75
 11 Pascal Groß CM TBD 34 80
 12 Mats Wieffer CDM TBD 25 79
 13 Ferdi Kadıoğlu LB TBD 25 82
 14 Carlos Baleba CDM TBD 21 81
-15 James Milner CM TBD 39 72
 16 Matt O'Riley CM TBD 24 80
 17 Yasin Ayari CM TBD 21 72
 18 Danny Welbeck ST TBD 34 75
 19 Kaoru Mitoma LW TBD 27 82
 20 Georginio Rutter ST TBD 22 76
 21 Olivier Boscagli CB TBD 27 76
-22 Solly March RW TBD 30 78
 23 Diego Gómez CM TBD 22 73
 24 Thomas McGill GK TBD 23 65
 25 Facundo Buonanotte CAM TBD 20 73
@@ -318,31 +310,10 @@ const BRIGHTON_RAW = `1 Bart Verbruggen GK TBD 22 82
 28 Brajan Gruda RW TBD 21 76
 29 Jack Hinshelwood CM TBD 20 75
 30 Valentín Barco LB TBD 21 75
-31 Stefanos Tzimas ST TBD 20 72`;
+31 Stefanos Tzimas ST TBD 20 72
+50 Luka Vuskovic CB TBD 19 79
+51 Pascal Struijk CB TBD 26 77`;
 
-const BURNLEY_RAW = `1 Václav Hladký GK TBD 34 73
-2 Connor Roberts RB TBD 28 74
-3 Hjalmar Ekdal LB TBD 25 73
-4 Axel Tuanzebe CB TBD 27 73
-5 Maxime Estève CB TBD 22 73
-6 Quilindschy Hartman LB TBD 23 74
-7 Kyle Walker RB TBD 35 79
-8 Hannibal Mejbri CM TBD 22 74
-9 Jacob Bruun Larsen CAM TBD 27 75
-10 Zian Flemming CAM TBD 26 75
-11 Jaidon Anthony LW TBD 25 73
-12 Marcus Edwards RW TBD 25 76
-13 Loum Tchaouna LW TBD 22 73
-14 Josh Laurent CM TBD 29 70
-15 Luca Pires Silva LB TBD 23 70
-16 Lyle Foster ST TBD 24 75
-17 Florentino Luis CDM TBD 25 80
-18 Mike Tresor LW TBD 25 76
-19 Zeki Amdouni ST TBD 24 75
-20 Ashley Barnes ST TBD 35 71
-21 Bashir Humphreys CB TBD 22 70
-22 Luca Koleosho RW TBD 20 70
-23 Lesley Ugochukwu CDM TBD 21 72`;
 
 const CHELSEA_RAW = `1 Filip Jørgensen GK TBD 22 78
 2 Robert Sánchez GK TBD 27 78
@@ -364,7 +335,6 @@ const CHELSEA_RAW = `1 Filip Jørgensen GK TBD 22 78
 18 Liam Delap ST TBD 22 75
 19 Alejandro Garnacho LW TBD 21 75
 20 Estêvão RW TBD 18 78
-22 Andrey Santos CM TBD 21 73
 23 Jamie Gittens LW TBD 20 76
 24 Jorrel Hato LB TBD 19 76
 25 Marc Guiu ST TBD 19 70
@@ -375,7 +345,9 @@ const CHELSEA_RAW = `1 Filip Jørgensen GK TBD 22 78
 21 Nicolas Jackson ST TBD 24 79
 30 Axel Disasi CB TBD 27 76
 31 David Datro Fofana ST TBD 23 70
-32 Mamadou Sarr CB TBD 19 68`;
+32 Mamadou Sarr CB TBD 19 68
+50 Marco Palestra RB TBD 21 79
+51 Geovany Quenda RW TBD 19 79`;
 
 const CRYSTALPALACE_RAW = `1 Dean Henderson GK TBD 28 80
 2 Walter Benitez GK TBD 31 78
@@ -400,7 +372,8 @@ const CRYSTALPALACE_RAW = `1 Dean Henderson GK TBD 28 80
 21 Justin Devenny CAM TBD 20 68
 23 Chadi Riad CB TBD 21 72
 24 David Ozoh CM TBD 19 67
-25 Romain Esse LW TBD 20 72`;
+25 Romain Esse LW TBD 20 72
+50 Oscar Mingueza RB TBD 27 76`;
 
 const EVERTON_RAW = `1 Jordan Pickford GK TBD 31 84
 2 Mark Travers GK TBD 25 75
@@ -440,25 +413,21 @@ const FULHAM_RAW = `1 Bernd Leno GK TBD 33 82
 14 Sasa Lukic CM TBD 28 76
 15 Alex Iwobi CAM TBD 28 79
 16 Ryan Sessegnon LW TBD 25 75
-17 Harry Wilson CAM TBD 28 76
 18 Oscar Bobb CAM TBD 22 77
 19 Emile Smith Rowe CAM TBD 24 77
 20 Jorge Cuenca LW TBD 25 73
 21 Rodrigo Muniz ST TBD 24 79
-22 Raúl Jiménez ST TBD 33 79
 23 Samuel Chukwueze RW TBD 25 78
 24 Kevin Dos Santos RW TBD 23 76
 25 Sander Berge CM TBD 27 79
 26 Luke Harris CM TBD 20 68
 27 Josh King CM TBD 18 67
-28 Luc De Fougerolles CB TBD 20 68`;
+28 Luc De Fougerolles CB TBD 20 68
+50 Jonah Kusi-Asare ST TBD 18 70`;
 
 const LEEDS_RAW = `1 Lucas Perri GK TBD 27 80
 2 Alex Cairns GK TBD 32 71
-3 Karl Darlow GK TBD 34 75
-4 Sam Byram RB TBD 30 74
 5 Jaka Bijol CB TBD 27 78
-6 Pascal Struijk CB TBD 26 77
 7 Jayden Bogle RB TBD 24 75
 8 James Justin RB TBD 26 77
 9 Joe Rodon CB TBD 27 77
@@ -476,8 +445,8 @@ const LEEDS_RAW = `1 Lucas Perri GK TBD 27 80
 21 Joel Piroe ST TBD 25 76
 22 Noah Okafor ST TBD 25 76
 23 Lukas Nmecha ST TBD 25 74
-24 Facundo Buonanotte CAM TBD 20 73
-25 Largie Ramazani LW TBD 24 75`;
+25 Largie Ramazani LW TBD 24 75
+50 Harry Wilson CAM TBD 29 76`;
 
 const LIVERPOOL_RAW = `1 Alisson Becker GK TBD 32 89
 2 Giorgi Mamardashvili GK TBD 24 81
@@ -486,11 +455,9 @@ const LIVERPOOL_RAW = `1 Alisson Becker GK TBD 32 89
 5 Conor Bradley RB TBD 22 79
 6 Milos Kerkez LB TBD 21 78
 8 Virgil van Dijk CB TBD 33 90
-9 Ibrahima Konaté CB TBD 26 86
 10 Joe Gomez CB TBD 27 81
 11 Owen Beck LB TBD 23 70
 12 Calvin Ramsay RB TBD 22 68
-13 Rhys Williams CB TBD 24 68
 14 Ryan Gravenberch CM TBD 23 85
 15 Alexis Mac Allister CM TBD 26 85
 16 Cody Gakpo LW TBD 25 83
@@ -498,7 +465,6 @@ const LIVERPOOL_RAW = `1 Alisson Becker GK TBD 32 89
 18 Curtis Jones CM TBD 24 79
 19 Florian Wirtz CAM TBD 22 84
 20 Alexander Isak ST TBD 25 83
-21 Mohamed Salah RW TBD 33 89
 22 Hugo Ekitike ST TBD 23 85
 23 Jeremie Frimpong RB TBD 24 82
 24 Federico Chiesa RW TBD 27 80
@@ -509,13 +475,14 @@ const LIVERPOOL_RAW = `1 Alisson Becker GK TBD 32 89
 7 Kostas Tsimikas LB TBD 25 76
 29 Harvey Elliott CAM TBD 22 78
 30 Armin Pecsi GK TBD 20 68
-31 Jayden Danns ST TBD 19 70`;
+31 Jayden Danns ST TBD 19 70
+50 Jérémy Jacquet CB TBD 20 78
+51 Víctor Muñoz LW TBD 22 78`;
 
 const MANCITY_RAW = `1 Gianluigi Donnarumma GK TBD 26 90
 2 Marcus Bettinelli GK TBD 32 72
 3 James Trafford GK TBD 22 74
 5 Rúben Dias CB TBD 27 86
-6 John Stones CB TBD 31 84
 7 Rayan Aït-Nouri LB TBD 24 81
 8 Joško Gvardiol CB TBD 23 85
 9 Marc Guehi CB TBD 24 83
@@ -536,23 +503,22 @@ const MANCITY_RAW = `1 Gianluigi Donnarumma GK TBD 26 90
 31 Jack Grealish LW TBD 29 77
 4 Rico Lewis RB TBD 21 77
 12 Mateo Kovačić CM TBD 32 82
-14 Savinho LW TBD 22 78`;
+14 Savinho LW TBD 22 78
+50 Elliot Anderson CM TBD 23 83
+51 Jeremy Monga RW TBD 17 68`;
 
 const MANUTD_RAW = `1 Senne Lammens GK TBD 29 82
 2 Altay Bayındır GK TBD 26 74
 3 Tom Heaton GK TBD 38 70
 4 Harry Maguire CB TBD 32 80
 5 Lisandro Martínez CB TBD 27 80
-6 Tyrell Malacia LB TBD 25 74
 7 Leny Yoro CB TBD 19 78
 8 Diogo Dalot RB TBD 26 79
 9 Luke Shaw LB TBD 29 79
 10 Noussair Mazraoui RB TBD 27 79
 11 Bruno Fernandes CAM TBD 30 91
 13 Amad Diallo RW TBD 22 77
-14 Casemiro CDM TBD 33 81
 15 Kobbie Mainoo CM TBD 19 81
-16 Jonny Evans CB TBD 37 74
 17 Mason Mount CAM TBD 26 79
 19 Bryan Mbeumo RW TBD 25 85
 20 Matheus Cunha ST TBD 25 83
@@ -567,38 +533,37 @@ const MANUTD_RAW = `1 Senne Lammens GK TBD 29 82
 18 Matthijs de Ligt CB TBD 26 82
 28 Patrick Dorgu LB TBD 21 78
 29 Benjamin Šeško ST TBD 23 80
-30 Joshua Zirkzee ST TBD 25 75`;
+30 Joshua Zirkzee ST TBD 25 75
+50 Youri Tielemans CM TBD 29 84
+51 Andrey Santos CM TBD 22 74
+52 Karl Darlow GK TBD 35 74`;
 
 const NEWCASTLE_RAW = `1 Nick Pope GK TBD 33 82
 2 Mark Gillespie GK TBD 33 68
-3 Kieran Trippier RB TBD 34 82
 4 Dan Burn LB TBD 32 75
 5 Fabian Schär CB TBD 33 78
 6 Sven Botman CB TBD 25 79
-7 Emil Krafth RB TBD 30 70
 8 Jamal Lascelles CB TBD 31 75
 9 Tino Livramento RB TBD 22 77
-10 Matt Targett LB TBD 29 73
 13 Joelinton CM TBD 28 82
 14 Bruno Guimarães CDM TBD 27 86
 15 Joe Willock CM TBD 25 75
 16 Lewis Hall LB TBD 20 80
 17 Harvey Barnes LW TBD 27 78
-18 Miguel Almirón CAM TBD 31 76
 19 Yoanne Wissa ST TBD 29 77
 20 Jacob Murphy RW TBD 29 75
-21 Callum Wilson ST TBD 33 76
 23 Lewis Miley CM TBD 20 77
 24 Antonio Cordero LW TBD 19 70
 25 Nick Woltemade ST TBD 24 79
-26 Malick Thiaw CB TBD 24 79`;
+26 Malick Thiaw CB TBD 24 79
+50 Bazoumana Touré LW TBD 20 78
+51 Sean Steur CM TBD 18 72`;
 
 const NOTTMFOREST_RAW = `1 Matz Sels GK TBD 32 82
 2 Carlos Miguel GK TBD 27 74
 3 Matt Turner GK TBD 30 74
 4 Neco Williams RB TBD 23 75
 5 Harry Toffolo LB TBD 29 72
-6 Willy Boly CB TBD 33 76
 7 Moussa Niakhaté CB TBD 28 77
 8 Joe Worrall CB TBD 28 74
 9 Andrew Omobamidele CB TBD 23 73
@@ -607,7 +572,6 @@ const NOTTMFOREST_RAW = `1 Matz Sels GK TBD 32 82
 12 Ola Aina RB TBD 28 80
 13 Ryan Yates CM TBD 27 74
 14 Morgan Gibbs-White CAM TBD 25 84
-15 Elliot Anderson CM TBD 22 83
 16 Nicolas Dominguez CM TBD 27 75
 17 Chris Wood ST TBD 33 75
 19 Anthony Elanga RW TBD 23 76
@@ -627,42 +591,34 @@ const NOTTMFOREST_RAW = `1 Matz Sels GK TBD 32 82
 const SUNDERLAND_RAW = `1 Anthony Patterson GK TBD 24 73
 2 Seny Dieng GK TBD 32 73
 3 Trai Hume RB TBD 23 72
-4 Niall Huggins LB TBD 23 65
 5 Dan Ballard CB TBD 24 73
 6 Luke O'Nien CB TBD 30 71
-7 Dennis Cirkin LB TBD 23 70
 8 Aji Alese LB TBD 23 70
-9 Lynden Gooch RB TBD 29 70
-10 Jobe Bellingham CM TBD 19 74
 11 Granit Xhaka CM TBD 33 80
 12 Patrick Roberts RW TBD 27 72
 13 Romaine Mundle LW TBD 21 71
 14 Eliezer Mayenda ST TBD 19 68
 15 Nectar Triantis CB TBD 21 68
 16 Alan Browne CM TBD 30 72
-17 Jack Clarke LW TBD 24 74
 18 Jewison Bennette LW TBD 21 70
 19 Abdoullah Ba CM TBD 21 68
-21 Nazariy Rusyn ST TBD 22 70
 22 Wilson Isidor ST TBD 24 72
 23 Nordi Mukiele CB TBD 28 78
 24 Robin Roefs GK TBD 23 78
-25 Chris Rigg CM TBD 19 76`;
+25 Chris Rigg CM TBD 19 76
+50 Thomas Meunier RB TBD 34 72`;
 
 const TOTTENHAM_RAW = `1 Guglielmo Vicario GK TBD 28 82
 2 Martin Dúbravka GK TBD 36 76
 3 Brandon Austin GK TBD 25 68
 4 Pedro Porro RB TBD 25 80
-5 Radu Drăgușin CB TBD 23 76
 6 Cristian Romero CB TBD 27 83
 7 Ashley Phillips CB TBD 19 63
 33 Micky van de Ven CB TBD 25 82
-8 João Palhinha CDM TBD 29 83
 9 Emerson Royal RB TBD 25 74
 10 Ben Davies LB TBD 32 76
 11 Destiny Udogie LB TBD 22 79
 12 Xavi Simons CAM TBD 22 81
-13 Yves Bissouma CDM TBD 28 78
 14 Rodrigo Bentancur CM TBD 27 80
 15 Lucas Bergvall CM TBD 19 74
 16 Pape Sarr CM TBD 22 77
@@ -673,70 +629,110 @@ const TOTTENHAM_RAW = `1 Guglielmo Vicario GK TBD 28 82
 22 Mathys Tel ST TBD 20 76
 23 Archie Gray CM TBD 19 75
 24 Mateus Fernandes CM TBD 21 77
-25 Randal Kolo Muani ST TBD 26 76
 26 Mikey Moore LW TBD 18 74
 27 Yang Min-hyeok RW TBD 20 73
 28 Antonín Kinský GK TBD 22 74
 29 Conor Gallagher CM TBD 26 79
 34 Andrew Robertson LB TBD 31 81
 35 Sandro Tonali CM TBD 25 86
-36 Marcos Senesi CB TBD 29 79`;
+36 Marcos Senesi CB TBD 29 79
+50 Jan Paul van Hecke CB TBD 25 79`;
 
-const WESTHAM_RAW = `1 Lukáš Hrádecký GK TBD 35 79
-3 Harry Tyrer GK TBD 23 65
-4 Ben Johnson RB TBD 24 72
-5 Max Kilman CB TBD 27 79
-7 Kurt Zouma CB TBD 30 77
-8 Aaron Wan-Bissaka RB TBD 27 77
-9 Vladimir Coufal RB TBD 32 74
-10 Konstantinos Mavropanos CB TBD 27 75
-11 Jean-Clair Todibo CB TBD 26 74
-12 Tomás Soucek CM TBD 30 79
-13 Lucas Paquetá CAM TBD 27 83
-14 Guido Rodríguez CDM TBD 30 77
-15 James Ward-Prowse CM TBD 30 80
-16 Kalvin Phillips CDM TBD 29 73
-17 Oliver Scarles LB TBD 19 64
-18 Freddie Potts CM TBD 21 67
-19 Jarrod Bowen RW TBD 28 81
-20 Mohammed Kudus CAM TBD 24 78
-21 Crysencio Summerville LW TBD 23 78
-23 Danny Ings ST TBD 32 75
-24 Niclas Füllkrug ST TBD 32 79
-25 Kaelan Casey CB TBD 21 69
-26 George Earthy CM TBD 21 70`;
 
-const WOLVES_RAW = `1 José Sá GK TBD 31 79
-2 Daniel Bentley GK TBD 30 72
-4 Yerson Mosquera CB TBD 23 71
-5 Santiago Bueno CB TBD 26 75
-6 Craig Dawson CB TBD 35 72
-7 Toti CB TBD 25 74
-8 Emmanuel Agbadou CB TBD 27 75
-9 João Gomes CDM TBD 24 79
-10 Tommy Doyle CM TBD 23 73
-11 Luke Cundle CM TBD 22 67
-12 Boubacar Traoré CM TBD 22 73
-13 André CDM TBD 23 76
-15 Pedro Lima RW TBD 18 64
-17 Hwang Hee-chan ST TBD 29 76
-18 Pablo Sarabia CAM TBD 33 76
-19 Rodrigo Gomes RW TBD 22 74
-20 Enso González CM TBD 20 68
-21 Ty Barnett RB TBD 20 63
-23 Bastien Meupiyou CB TBD 19 68`;
+
+const HULL_RAW = `1 Jack Butland GK TBD 33 76
+2 Lewie Coyle RB TBD 30 70
+3 Ryan Giles LB TBD 26 73
+4 Semi Ajayi CB TBD 32 72
+5 John Egan CB TBD 33 72
+6 Paddy McNair CB TBD 31 73
+7 Abdülkadir Ömür CAM TBD 27 73
+8 Eliot Matazo CDM TBD 24 72
+9 Oliver McBurnie ST TBD 30 72
+10 Kasey Palmer CAM TBD 29 72
+11 Liam Millar LW TBD 26 71
+12 Harvey Cartwright GK TBD 24 66
+13 Kieran Dowell CAM TBD 28 72
+14 Regan Slater CM TBD 26 70
+15 Matty Jacob LB TBD 25 68
+16 Cody Drameh RB TBD 24 71
+17 Abu Kamara RW TBD 22 72
+18 Darko Gyabi CM TBD 22 70
+19 Enis Destan ST TBD 24 70
+20 Mason Burstow ST TBD 22 70
+21 Matt Crooks CM TBD 32 70
+22 Mohamed Belloumi RW TBD 24 70
+23 Kyle Joseph ST TBD 24 70
+24 Dillon Phillips GK TBD 31 68
+25 Thimothee Lo-Tutala GK TBD 23 65`;
+
+const IPSWICH_RAW = `1 Alex Palmer GK TBD 29 74
+2 Ben Johnson RB TBD 26 74
+3 Leif Davis LB TBD 26 76
+4 Dara O'Shea CB TBD 27 76
+5 Jacob Greaves CB TBD 25 74
+6 Cedric Kipre CB TBD 29 73
+7 Jaden Philogene LW TBD 24 77
+8 Azor Matusiwa CDM TBD 28 74
+9 Chuba Akpom ST TBD 30 74
+10 Sammie Szmodics ST TBD 30 76
+11 Jack Clarke LW TBD 25 74
+12 Christian Walton GK TBD 30 71
+13 Cameron Humphreys CB TBD 27 71
+14 Jack Taylor CM TBD 26 71
+15 Kasey McAteer RW TBD 24 73
+16 Marcelino Núñez CAM TBD 26 75
+17 Anis Mehmeti CAM TBD 25 73
+18 Chiedozie Ogbene RW TBD 29 73
+19 George Hirst ST TBD 27 73
+20 Wes Burns RW TBD 31 71
+21 Ali Al-Hamadi ST TBD 24 71
+22 Harrison Clarke RB TBD 25 70
+23 Darnell Furlong RB TBD 30 72
+24 Elkan Baggott CB TBD 23 68
+25 Sindre Walle Egeli ST TBD 20 69
+26 Finley Barbrook CM TBD 21 66
+27 Cieran Slicker GK TBD 23 66`;
+
+const COVENTRY_RAW = `1 Oliver Dovin GK TBD 24 72
+2 Milan van Ewijk RB TBD 25 73
+3 Jay Da Silva LB TBD 28 71
+4 Bobby Thomas CB TBD 25 72
+5 Liam Kitching CB TBD 26 73
+6 Luke Woolfenden CB TBD 27 72
+7 Tatsuhiro Sakamoto RW TBD 29 73
+8 Frank Onyeka CDM TBD 28 74
+9 Ellis Simms ST TBD 25 74
+10 Jack Rudoni CAM TBD 25 74
+11 Ephron Mason-Clark LW TBD 26 72
+12 Ben Wilson GK TBD 33 68
+13 Kaine Kesler Hayden RB TBD 23 71
+14 Joel Latibeaudiere CB TBD 26 71
+15 Matt Grimes CM TBD 31 74
+16 Josh Eccles CM TBD 26 70
+17 Victor Torp CM TBD 26 72
+18 Haji Wright ST TBD 28 75
+19 Brandon Thomas-Asante ST TBD 27 72
+20 Norman Bassette ST TBD 21 70
+21 Raphael Borges Rodrigues RW TBD 22 70
+22 Jahnoah Markelo LW TBD 23 68
+23 Jake Bidwell LB TBD 33 68
+24 Kai Andrews CM TBD 19 65
+25 Harvey Broad CB TBD 20 65`;
 
 export const INITIAL_PLAYERS = [
-...processSquad(ARSENAL_RAW, 'arsenal'),
+  ...processSquad(ARSENAL_RAW, 'arsenal'),
   ...processSquad(ASTONVILLA_RAW, 'astonvilla'),
   ...processSquad(BOURNEMOUTH_RAW, 'bournemouth'),
   ...processSquad(BRENTFORD_RAW, 'brentford'),
   ...processSquad(BRIGHTON_RAW, 'brighton'),
-  ...processSquad(BURNLEY_RAW, 'burnley'),
   ...processSquad(CHELSEA_RAW, 'chelsea'),
+  ...processSquad(COVENTRY_RAW, 'coventry'),
   ...processSquad(CRYSTALPALACE_RAW, 'crystalpalace'),
   ...processSquad(EVERTON_RAW, 'everton'),
   ...processSquad(FULHAM_RAW, 'fulham'),
+  ...processSquad(HULL_RAW, 'hull'),
+  ...processSquad(IPSWICH_RAW, 'ipswich'),
   ...processSquad(LEEDS_RAW, 'leeds'),
   ...processSquad(LIVERPOOL_RAW, 'liverpool'),
   ...processSquad(MANCITY_RAW, 'mancity'),
@@ -744,7 +740,5 @@ export const INITIAL_PLAYERS = [
   ...processSquad(NEWCASTLE_RAW, 'newcastle'),
   ...processSquad(NOTTMFOREST_RAW, 'nottmforest'),
   ...processSquad(SUNDERLAND_RAW, 'sunderland'),
-  ...processSquad(TOTTENHAM_RAW, 'tottenham'),
-  ...processSquad(WESTHAM_RAW, 'westham'),
-  ...processSquad(WOLVES_RAW, 'wolves')
+  ...processSquad(TOTTENHAM_RAW, 'tottenham')
 ];
