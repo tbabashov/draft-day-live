@@ -657,54 +657,71 @@ function PickerModal({ title, subtitle, kicker, candidates, onPick }: {
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className={`fixed inset-0 z-50 grid place-items-center p-6 overflow-y-auto transition-all duration-200 ${preview ? "bg-transparent backdrop-blur-none" : "bg-background/85 backdrop-blur-xl"}`}
+      className={`fixed inset-0 z-50 overflow-y-auto transition-all duration-200 ${preview ? "bg-transparent backdrop-blur-none" : "bg-background/85 backdrop-blur-xl"}`}
     >
-      <button
-        onPointerDown={(e) => { e.preventDefault(); setPreview(true); }}
-        onPointerUp={() => setPreview(false)}
-        onPointerLeave={() => setPreview(false)}
-        onPointerCancel={() => setPreview(false)}
-        onContextMenu={(e) => e.preventDefault()}
-        className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-10 inline-flex items-center gap-2 rounded-full border px-6 py-3 text-xs font-semibold select-none touch-none transition ${
-          preview
-            ? "border-primary bg-primary text-primary-foreground shadow-[0_10px_40px_-10px_var(--crimson)]"
-            : "border-border bg-surface/90 backdrop-blur text-foreground hover:border-primary/60"
-        }`}
-      >
-        <Eye className="w-4 h-4" />
-        {preview ? "Release to make your pick" : "Hold to preview your squad"}
-      </button>
-      <motion.div
-        initial={{ y: 30, opacity: 0, scale: 0.98 }}
-        animate={{ y: 0, opacity: preview ? 0 : 1, scale: 1 }}
-        exit={{ y: 30, opacity: 0, scale: 0.98 }}
-        transition={{ type: "spring", stiffness: 220, damping: 22, opacity: { duration: 0.15 } }}
-        className={`relative w-full max-w-6xl ${preview ? "pointer-events-none" : ""}`}
-      >
-        <div className="text-center mb-8">
-          <div className="font-mono text-xs uppercase tracking-widest text-primary">{kicker}</div>
-          <h2 className="mt-2 font-display text-5xl md:text-6xl">
-            {line1}{line2 && <><br /><span className="text-primary italic">{line2}</span></>}
-          </h2>
-          <p className="mt-3 text-sm text-muted-foreground">{subtitle}</p>
-        </div>
+      {/* The hold-to-preview button is a sibling of the fading content (so it
+          stays visible), and sits in normal flow — `fixed` can't be trusted
+          here because backdrop-blur makes this overlay a containing block. */}
+      <div className="min-h-full flex flex-col items-center justify-center gap-5 sm:gap-8 p-4 sm:p-6">
+        <motion.div
+          initial={{ y: 30, opacity: 0, scale: 0.98 }}
+          animate={{ y: 0, opacity: preview ? 0 : 1, scale: 1 }}
+          exit={{ y: 30, opacity: 0, scale: 0.98 }}
+          transition={{ type: "spring", stiffness: 220, damping: 22, opacity: { duration: 0.15 } }}
+          className={`relative w-full max-w-6xl ${preview ? "pointer-events-none" : ""}`}
+        >
+          <div className="text-center mb-5 sm:mb-8">
+            <div className="font-mono text-[10px] sm:text-xs uppercase tracking-widest text-primary">{kicker}</div>
+            <h2 className="mt-2 font-display text-3xl sm:text-5xl md:text-6xl leading-[0.95]">
+              {line1}{line2 && <><br /><span className="text-primary italic">{line2}</span></>}
+            </h2>
+            <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-muted-foreground">{subtitle}</p>
+          </div>
 
-        <div className="flex flex-wrap justify-center gap-4 md:gap-6">
-          {candidates.map((p, i) => (
-            <motion.div key={p.id}
-              initial={{ y: 40, opacity: 0, rotate: -3 }}
-              animate={{ y: 0, opacity: 1, rotate: 0 }}
-              transition={{ delay: i * 0.08, type: "spring", stiffness: 200 }}
-              className="w-44 flex flex-col items-center"
-            >
-              <DraftCard player={p} size="lg" interactive onClick={() => onPick(p)} />
-              <div className="mt-2 w-full text-center font-mono text-[10px] text-muted-foreground truncate">
-                {p.name.display} · {p.age}y · {p.club}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+          {/* Phones get a swipeable deck (no endless vertical scroll);
+              wider screens keep all five side by side. */}
+          <div
+            className="flex sm:flex-wrap sm:justify-center gap-3 sm:gap-4 md:gap-6
+                       overflow-x-auto sm:overflow-x-visible snap-x snap-mandatory sm:snap-none
+                       px-[calc(50%-5.5rem)] sm:px-0 pb-2
+                       [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {candidates.map((p, i) => (
+              <motion.div key={p.id}
+                initial={{ y: 40, opacity: 0, rotate: -3 }}
+                animate={{ y: 0, opacity: 1, rotate: 0 }}
+                transition={{ delay: i * 0.08, type: "spring", stiffness: 200 }}
+                className="shrink-0 snap-center w-44 flex flex-col items-center"
+              >
+                <DraftCard player={p} size="lg" interactive onClick={() => onPick(p)} />
+                <div className="mt-2 w-full text-center font-mono text-[10px] text-muted-foreground truncate">
+                  {p.name.display} · {p.age}y · {p.club}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="sm:hidden mt-2 text-center font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            Swipe through all {candidates.length} · tap to pick
+          </div>
+        </motion.div>
+
+        <button
+          onPointerDown={(e) => { e.preventDefault(); setPreview(true); }}
+          onPointerUp={() => setPreview(false)}
+          onPointerLeave={() => setPreview(false)}
+          onPointerCancel={() => setPreview(false)}
+          onContextMenu={(e) => e.preventDefault()}
+          className={`shrink-0 inline-flex items-center gap-2 rounded-full border px-5 sm:px-6 py-3 text-xs font-semibold select-none touch-none transition ${
+            preview
+              ? "border-primary bg-primary text-primary-foreground shadow-[0_10px_40px_-10px_var(--crimson)]"
+              : "border-border bg-surface/90 backdrop-blur text-foreground hover:border-primary/60"
+          }`}
+        >
+          <Eye className="w-4 h-4" />
+          {preview ? "Release to make your pick" : "Hold to preview your squad"}
+        </button>
+      </div>
     </motion.div>
   );
 }
