@@ -596,8 +596,12 @@ function FormationModal({ options, onPick }: { options: FormationId[]; onPick: (
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 grid place-items-center p-6 bg-background/90 backdrop-blur-xl overflow-y-auto"
+      className="fixed inset-0 z-50 bg-background/90 backdrop-blur-xl overflow-y-auto"
     >
+      {/* Flex wrapper, not `grid place-items-center`: the deck's percentage
+          side padding would otherwise inflate the grid item and shove it
+          off-centre. */}
+      <div className="min-h-full flex flex-col items-center justify-center p-4 sm:p-6">
       <motion.div
         initial={{ y: 30, opacity: 0, scale: 0.98 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -605,12 +609,19 @@ function FormationModal({ options, onPick }: { options: FormationId[]; onPick: (
         transition={{ type: "spring", stiffness: 220, damping: 22 }}
         className="relative w-full max-w-5xl"
       >
-        <div className="text-center mb-8">
-          <div className="font-mono text-xs uppercase tracking-widest text-primary">Step 1 · Formation</div>
-          <h2 className="mt-2 font-display text-5xl md:text-6xl">Shape comes first.</h2>
-          <p className="mt-3 text-sm text-muted-foreground">Five shapes from the hat. The one you pick is your system for the whole run — no changing later.</p>
+        <div className="text-center mb-5 sm:mb-8">
+          <div className="font-mono text-[10px] sm:text-xs uppercase tracking-widest text-primary">Step 1 · Formation</div>
+          <h2 className="mt-2 font-display text-3xl sm:text-5xl md:text-6xl leading-[0.95]">Shape comes first.</h2>
+          <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-muted-foreground">Five shapes from the hat. The one you pick is your system for the whole run — no changing later.</p>
         </div>
-        <div className="flex flex-wrap justify-center gap-4 md:gap-5">
+        {/* Same swipeable deck as the player picker: one shape at a time on a
+            phone, all five side by side once there's room. */}
+        <div
+          className="flex sm:flex-wrap sm:justify-center gap-3 sm:gap-4 md:gap-5
+                     overflow-x-auto sm:overflow-x-visible snap-x snap-mandatory sm:snap-none
+                     px-[calc(50%-5rem)] sm:px-0 pb-2
+                     [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
           {options.map((f, i) => (
             <motion.button
               key={f}
@@ -620,7 +631,7 @@ function FormationModal({ options, onPick }: { options: FormationId[]; onPick: (
               onClick={() => onPick(f)}
               whileHover={{ y: -6, scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
-              className="w-40 rounded-xl border border-border bg-surface hover:border-primary/60 p-3 text-left shadow-[0_10px_30px_-10px_rgba(0,0,0,0.6)]"
+              className="shrink-0 snap-center w-40 rounded-xl border border-border bg-surface hover:border-primary/60 p-3 text-left shadow-[0_10px_30px_-10px_rgba(0,0,0,0.6)]"
             >
               <div className="relative aspect-[10/12] rounded-lg overflow-hidden"
                 style={{ background: "radial-gradient(ellipse at top, oklch(0.28 0.09 145), oklch(0.16 0.05 145))" }}>
@@ -640,7 +651,11 @@ function FormationModal({ options, onPick }: { options: FormationId[]; onPick: (
             </motion.button>
           ))}
         </div>
+        <div className="sm:hidden mt-2 text-center font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          Swipe through all {options.length} · tap to pick
+        </div>
       </motion.div>
+      </div>
     </motion.div>
   );
 }
