@@ -200,17 +200,17 @@ function TacticsPage() {
             {!manageMode && (
               <>
                 <Link to="/draft" title="Draft" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition shrink-0">
-                  <ArrowLeft className="w-4 h-4" /> <span className="hidden sm:inline">Draft</span>
+                  <ArrowLeft className="w-4 h-4" /> <span className="hidden lg:inline">Draft</span>
                 </Link>
-                <div className="hidden sm:block w-px h-6 bg-border" />
+                <div className="hidden lg:block w-px h-6 bg-border" />
               </>
             )}
             <div className="font-display text-lg sm:text-2xl tracking-widest truncate">
-              <span className="sm:hidden">{manageMode ? "MANAGE" : "TACTICS"}</span>
-              <span className="hidden sm:inline">{manageMode ? "MANAGE TEAM" : "TACTICS"}</span>
+              <span className="lg:hidden">{manageMode ? "MANAGE" : "TACTICS"}</span>
+              <span className="hidden lg:inline">{manageMode ? "MANAGE TEAM" : "TACTICS"}</span>
             </div>
             {!manageMode && (
-              <div className="hidden md:flex items-center gap-2 rounded-full bg-surface border border-border px-3 py-1 font-mono text-xs text-muted-foreground">
+              <div className="hidden xl:flex items-center gap-2 rounded-full bg-surface border border-border px-3 py-1 font-mono text-xs text-muted-foreground shrink-0">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary ticker-dot" />
                 Step 3 · Deploy
               </div>
@@ -219,12 +219,12 @@ function TacticsPage() {
           <div className="flex items-start gap-3 sm:gap-6 shrink-0">
             <div className="text-right">
               <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-muted-foreground">
-                <span className="sm:hidden">Fit</span><span className="hidden sm:inline">Familiarity</span>
+                <span className="lg:hidden">Fit</span><span className="hidden lg:inline">Familiarity</span>
               </div>
               <div className="flex items-baseline justify-end gap-2">
                 <div className="font-display text-lg sm:text-3xl leading-none">{fit}<span className="text-muted-foreground text-xs sm:text-lg leading-none">%</span></div>
               </div>
-              <div className="hidden sm:block mt-1 h-1 w-28 rounded-full bg-surface-2 overflow-hidden ml-auto">
+              <div className="hidden lg:block mt-1 h-1 w-28 rounded-full bg-surface-2 overflow-hidden ml-auto">
                 <motion.div
                   className="h-full rounded-full"
                   style={{ background: fit >= 90 ? "oklch(0.75 0.19 145)" : fit >= 70 ? "oklch(0.8 0.16 85)" : "oklch(0.63 0.24 25)" }}
@@ -235,15 +235,15 @@ function TacticsPage() {
             </div>
             <div className="text-right">
               <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-muted-foreground">
-                <span className="sm:hidden">Str</span><span className="hidden sm:inline">Squad strength</span>
+                <span className="lg:hidden">Str</span><span className="hidden lg:inline">Squad strength</span>
               </div>
               <div className="flex items-baseline justify-end gap-2">
                 {teamRating > 0 && teamRating < baseRating && (
-                  <span className="hidden sm:inline font-mono text-xs text-muted-foreground line-through">{baseRating}</span>
+                  <span className="hidden lg:inline font-mono text-xs text-muted-foreground line-through">{baseRating}</span>
                 )}
                 <div className="font-display text-lg sm:text-3xl leading-none text-primary">{teamRating || "—"}</div>
               </div>
-              <div className="hidden sm:block mt-1 h-1 w-28 rounded-full bg-surface-2 overflow-hidden ml-auto">
+              <div className="hidden lg:block mt-1 h-1 w-28 rounded-full bg-surface-2 overflow-hidden ml-auto">
                 <motion.div
                   className="h-full rounded-full"
                   style={{ background: fit >= 90 ? "oklch(0.75 0.19 145)" : fit >= 70 ? "oklch(0.8 0.16 85)" : "oklch(0.63 0.24 25)" }}
@@ -252,12 +252,12 @@ function TacticsPage() {
                 />
               </div>
             </div>
-            <Link to="/home" title="Home" className={`${btnGhost} !px-3 sm:!px-7`}>
-              <Home className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Home</span>
+            <Link to="/home" title="Home" className={`${btnGhost} !px-3 lg:!px-7`}>
+              <Home className="w-3.5 h-3.5" /> <span className="hidden lg:inline">Home</span>
             </Link>
             <RestartRunButton />
             {/* Primary CTA lives in the sticky bottom bar on mobile */}
-            <div className="hidden sm:block">
+            <div className="hidden lg:block">
               {manageMode ? (
                 <Link to={backTo} className={btnPrimary}>
                   Go back <ArrowRight className="w-3.5 h-3.5" />
@@ -428,7 +428,7 @@ function TacticsPage() {
       </main>
 
       {/* Mobile sticky CTA — the one action that matters, in thumb reach */}
-      <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/90 backdrop-blur-xl px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/90 backdrop-blur-xl px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
         {manageMode ? (
           <Link to={backTo} className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)]">
             Go back <ArrowRight className="w-4 h-4" />

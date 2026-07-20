@@ -256,7 +256,7 @@ function DraftPage() {
         <div className="mx-auto max-w-[1600px] px-3 sm:px-6 py-2.5 sm:py-4 flex items-center justify-between gap-2 sm:gap-6">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             <div className="font-display text-xl sm:text-2xl tracking-widest">DRAFT</div>
-            <div className="hidden md:flex items-center gap-2 rounded-full bg-surface border border-border px-3 py-1 font-mono text-xs text-muted-foreground">
+            <div className="hidden xl:flex items-center gap-2 rounded-full bg-surface border border-border px-3 py-1 font-mono text-xs text-muted-foreground shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-primary ticker-dot" />
               {formation ?? "Formation TBD"} · Season 26
             </div>
@@ -280,7 +280,7 @@ function DraftPage() {
             <RestartRunButton />
             {done && (
               <button onClick={() => setSummaryOpen(true)}
-                className="hidden sm:inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:shadow-[0_10px_40px_-10px_var(--crimson)] transition-all">
+                className="hidden lg:inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:shadow-[0_10px_40px_-10px_var(--crimson)] transition-all">
                 Squad summary <ArrowRight className="w-4 h-4" />
               </button>
             )}
@@ -297,7 +297,7 @@ function DraftPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1600px] px-3 sm:px-6 py-4 sm:py-8 pb-24 sm:pb-8 grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 sm:gap-8">
+      <main className="mx-auto max-w-[1600px] px-3 sm:px-6 py-4 sm:py-8 pb-24 lg:pb-8 grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 sm:gap-8">
         {/* Pitch */}
         <section>
           <div className="mb-2 sm:mb-3 flex items-baseline justify-between gap-2">
@@ -378,7 +378,7 @@ function DraftPage() {
 
       {/* Mobile sticky CTA — the squad is done, get them out of here */}
       {done && (
-        <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/90 backdrop-blur-xl px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/90 backdrop-blur-xl px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           <button onClick={() => setSummaryOpen(true)}
             className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)]">
             Squad summary <ArrowRight className="w-4 h-4" />

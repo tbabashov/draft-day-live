@@ -276,7 +276,7 @@ function LeaguePage() {
             <h1 className="font-display text-lg sm:text-2xl tracking-wide truncate">DRAFT LEAGUE</h1>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <div className="hidden sm:flex items-center gap-2">
+            <div className="hidden lg:flex items-center gap-2">
               {league && !seasonOver && (
                 <Link to="/tactics" className={btnGhost}>
                   <Users className="w-3.5 h-3.5" /> Manage team
@@ -295,21 +295,21 @@ function LeaguePage() {
               )}
             </div>
             {/* Mobile: icon only — matchday button lives in the bottom bar */}
-            <div className="flex sm:hidden items-center gap-2">
+            <div className="flex lg:hidden items-center gap-2">
               {league && !seasonOver && (
                 <Link to="/tactics" title="Manage team" className={`${btnGhost} !px-3`}>
                   <Users className="w-4 h-4" />
                 </Link>
               )}
             </div>
-            <Link to="/home" title="Home" className={`${btnGhost} !px-3 sm:!px-7`}>
-              <Home className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="hidden sm:inline">Home</span>
+            <Link to="/home" title="Home" className={`${btnGhost} !px-3 lg:!px-7`}>
+              <Home className="w-4 h-4 lg:w-3.5 lg:h-3.5" /> <span className="hidden lg:inline">Home</span>
             </Link>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-3 sm:px-6 py-5 sm:py-8 pb-28 sm:pb-8">
+      <main className="mx-auto max-w-5xl px-3 sm:px-6 py-5 sm:py-8 pb-28 lg:pb-8">
         {!league ? (
           <div className="max-w-2xl mx-auto text-center py-12">
             <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/30 px-4 py-1.5 text-xs font-semibold text-primary uppercase tracking-widest">
@@ -464,7 +464,7 @@ function LeaguePage() {
 
       {/* Mobile bottom action bar — advance the season from thumb reach */}
       {league && (
-        <div className="sm:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border bg-background/90 backdrop-blur-xl px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border bg-background/90 backdrop-blur-xl px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           {!seasonOver && nextRound >= 0 ? (
             <button onClick={playNext}
               className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)]">

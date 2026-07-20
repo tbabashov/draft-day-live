@@ -274,7 +274,7 @@ function TournamentPage() {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {/* Full action set — desktop */}
-            <div className="hidden sm:flex items-center gap-2">
+            <div className="hidden lg:flex items-center gap-2">
               {bracket && !eliminated && !champion && (
                 <Link to="/tactics" className={btnGhost}>
                   <Users className="w-3.5 h-3.5" /> Manage team
@@ -297,7 +297,7 @@ function TournamentPage() {
               )}
             </div>
             {/* Mobile: icons only — the big action sits in the bottom bar */}
-            <div className="flex sm:hidden items-center gap-2">
+            <div className="flex lg:hidden items-center gap-2">
               {bracket && !eliminated && !champion && (
                 <Link to="/tactics" title="Manage team" className={`${btnGhost} !px-3`}>
                   <Users className="w-4 h-4" />
@@ -309,14 +309,14 @@ function TournamentPage() {
                 </button>
               )}
             </div>
-            <Link to="/home" title="Home" className={`${btnGhost} !px-3 sm:!px-7`}>
-              <Home className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="hidden sm:inline">Home</span>
+            <Link to="/home" title="Home" className={`${btnGhost} !px-3 lg:!px-7`}>
+              <Home className="w-4 h-4 lg:w-3.5 lg:h-3.5" /> <span className="hidden lg:inline">Home</span>
             </Link>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-3 sm:px-6 py-5 sm:py-8 pb-28 sm:pb-8">
+      <main className="mx-auto max-w-7xl px-3 sm:px-6 py-5 sm:py-8 pb-28 lg:pb-8">
         {!bracket ? (
           <SetupPanel xi={squad.xi} onGenerate={generate} />
         ) : (
@@ -335,7 +335,7 @@ function TournamentPage() {
 
       {/* Mobile bottom action bar — the tie you're about to play */}
       {bracket && !champion && (
-        <div className="sm:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border bg-background/90 backdrop-blur-xl px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border bg-background/90 backdrop-blur-xl px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           {nextUserMatch && !eliminated ? (
             <button onClick={() => setPreviewMatch(nextUserMatch)}
               className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)]">
