@@ -252,9 +252,9 @@ function DraftPage() {
     <div className="min-h-screen bg-background text-foreground grain">
       {/* Top bar */}
       <header className="sticky top-0 z-40 border-b border-border backdrop-blur-xl bg-background/70">
-        <div className="mx-auto max-w-[1600px] px-6 py-4 flex items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="font-display text-2xl tracking-widest">DRAFT</div>
+        <div className="mx-auto max-w-[1600px] px-3 sm:px-6 py-2.5 sm:py-4 flex items-center justify-between gap-2 sm:gap-6">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+            <div className="font-display text-xl sm:text-2xl tracking-widest">DRAFT</div>
             <div className="hidden md:flex items-center gap-2 rounded-full bg-surface border border-border px-3 py-1 font-mono text-xs text-muted-foreground">
               <span className="w-1.5 h-1.5 rounded-full bg-primary ticker-dot" />
               {formation ?? "Formation TBD"} · Season 26
@@ -262,24 +262,24 @@ function DraftPage() {
           </div>
 
           {/* Squad summary */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 sm:gap-6 shrink-0">
             <div className="text-right">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Progress</div>
-              <div className="font-display text-2xl leading-none">{totalFilled}<span className="text-muted-foreground">/{allSlots.length}</span></div>
+              <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-muted-foreground">Squad</div>
+              <div className="font-display text-lg sm:text-2xl leading-none">{totalFilled}<span className="text-muted-foreground">/{allSlots.length}</span></div>
             </div>
             <div className="text-right">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Squad avg</div>
-              <div className={`font-display text-3xl leading-none ${avg ? "" : "text-muted-foreground"}`}>
+              <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-muted-foreground">Avg</div>
+              <div className={`font-display text-lg sm:text-3xl leading-none ${avg ? "" : "text-muted-foreground"}`}>
                 {avg || "—"}
               </div>
             </div>
-            <Link to="/home" title="Home" className="grid place-items-center w-10 h-10 rounded-full border border-border hover:border-primary hover:text-primary transition">
+            <Link to="/home" title="Home" className="grid place-items-center w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-border hover:border-primary hover:text-primary transition shrink-0">
               <Home className="w-4 h-4" />
             </Link>
             <RestartRunButton />
             {done && (
               <button onClick={() => setSummaryOpen(true)}
-                className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:shadow-[0_10px_40px_-10px_var(--crimson)] transition-all">
+                className="hidden sm:inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:shadow-[0_10px_40px_-10px_var(--crimson)] transition-all">
                 Squad summary <ArrowRight className="w-4 h-4" />
               </button>
             )}
@@ -296,13 +296,14 @@ function DraftPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1600px] px-6 py-8 grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8">
+      <main className="mx-auto max-w-[1600px] px-3 sm:px-6 py-4 sm:py-8 pb-24 sm:pb-8 grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 sm:gap-8">
         {/* Pitch */}
         <section>
-          <div className="mb-3 flex items-baseline justify-between">
-            <h2 className="font-display text-3xl">Starting XI</h2>
-            <div className="font-mono text-xs text-muted-foreground uppercase tracking-widest">
-              {filledXi}/11 filled · drag to rearrange
+          <div className="mb-2 sm:mb-3 flex items-baseline justify-between gap-2">
+            <h2 className="font-display text-2xl sm:text-3xl">Starting XI</h2>
+            <div className="font-mono text-[10px] sm:text-xs text-muted-foreground uppercase tracking-widest text-right">
+              <span className="sm:hidden">{filledXi}/11 · tap to pick</span>
+              <span className="hidden sm:inline">{filledXi}/11 filled · drag to rearrange</span>
             </div>
           </div>
           <Pitch>
@@ -322,15 +323,15 @@ function DraftPage() {
         </section>
 
         {/* Bench + info */}
-        <aside className="space-y-6">
+        <aside className="space-y-5 sm:space-y-6">
           <div>
-            <div className="mb-3 flex items-baseline justify-between">
-              <h2 className="font-display text-3xl">Bench</h2>
-              <div className="font-mono text-xs text-muted-foreground uppercase tracking-widest">
+            <div className="mb-2 sm:mb-3 flex items-baseline justify-between">
+              <h2 className="font-display text-2xl sm:text-3xl">Bench</h2>
+              <div className="font-mono text-[10px] sm:text-xs text-muted-foreground uppercase tracking-widest">
                 {BENCH_SLOTS.filter((s) => assignments[s.id]).length}/7
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
               {BENCH_SLOTS.map((slot) => (
                 <BenchSlot
                   key={slot.id}
@@ -345,17 +346,21 @@ function DraftPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-border bg-surface p-4">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">How this works</div>
+          {/* Tips — collapsed by default on mobile so the pitch stays the hero */}
+          <details className="group rounded-xl border border-border bg-surface p-4 lg:open" open>
+            <summary className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground cursor-pointer list-none flex items-center justify-between lg:cursor-default">
+              How this works
+              <span className="lg:hidden text-primary transition group-open:rotate-180">▾</span>
+            </summary>
             <ul className="mt-2 space-y-1.5 text-sm text-muted-foreground">
               <li className="flex gap-2"><span className="text-primary">·</span>Formation first, then your captain, then the squad.</li>
-              <li className="flex gap-2"><span className="text-primary">·</span>Click an empty slot → pick 1 of 5. No rerolls, no backing out.</li>
+              <li className="flex gap-2"><span className="text-primary">·</span>Tap an empty slot → pick 1 of 5. No rerolls, no backing out.</li>
               <li className="flex gap-2"><span className="text-primary">·</span>Drag players between valid positions, or bench ↔ XI.</li>
             </ul>
-          </div>
+          </details>
 
-          {/* Rarity legend */}
-          <div className="rounded-xl border border-border bg-surface p-4">
+          {/* Rarity legend — desktop only, it's reference not action */}
+          <div className="hidden lg:block rounded-xl border border-border bg-surface p-4">
             <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">Rarity tiers</div>
             <div className="grid grid-cols-4 gap-2 text-center">
               {(["icon", "gold", "silver", "bronze"] as const).map((t) => (
@@ -369,6 +374,16 @@ function DraftPage() {
           </div>
         </aside>
       </main>
+
+      {/* Mobile sticky CTA — the squad is done, get them out of here */}
+      {done && (
+        <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/90 backdrop-blur-xl px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+          <button onClick={() => setSummaryOpen(true)}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)]">
+            Squad summary <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Swap hint */}
       <AnimatePresence>
@@ -439,7 +454,7 @@ function DraftPage() {
 /* --------- Pitch --------- */
 function Pitch({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative w-full max-w-[860px] mx-auto aspect-[10/8] rounded-2xl overflow-hidden border border-border"
+    <div className="relative w-full max-w-[860px] mx-auto aspect-[10/13] sm:aspect-[10/8] rounded-2xl overflow-hidden border border-border"
       style={{
         background: "radial-gradient(ellipse at top, oklch(0.28 0.09 145) 0%, oklch(0.18 0.06 145) 60%, oklch(0.14 0.04 145) 100%)",
       }}
@@ -732,18 +747,18 @@ function DraftSummary({ assignments, xiSlots, captainId, onEdit }: {
         animate={{ y: 0, opacity: 1, scale: 1 }}
         exit={{ y: 40, opacity: 0, scale: 0.96 }}
         transition={{ type: "spring", stiffness: 200, damping: 22 }}
-        className="w-full max-w-3xl rounded-2xl border border-border bg-surface p-6 md:p-8"
+        className="w-full max-w-3xl rounded-2xl border border-border bg-surface p-4 sm:p-6 md:p-8"
       >
         <div className="text-center">
           <div className="font-mono text-xs uppercase tracking-widest text-primary">Draft complete</div>
-          <h2 className="mt-2 font-display text-5xl md:text-6xl">YOUR SQUAD IS IN.</h2>
+          <h2 className="mt-2 font-display text-4xl sm:text-5xl md:text-6xl">YOUR SQUAD IS IN.</h2>
         </div>
 
         <div className="mt-8 grid md:grid-cols-[auto_1fr] gap-8 items-center">
           {/* Top players podium */}
           <div>
             <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground text-center mb-3">Top players</div>
-            <div className="flex items-end justify-center gap-2">
+            <div className="flex items-end justify-center gap-2 scale-[0.82] sm:scale-100 origin-bottom">
               {podium.map((p, i) => (
                 <motion.div key={p.id}
                   initial={{ y: 24, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
@@ -802,14 +817,14 @@ function DraftSummary({ assignments, xiSlots, captainId, onEdit }: {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.3 }}
-          className="mt-8 flex items-center justify-center gap-3"
+          className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:gap-3"
         >
           <button onClick={onEdit}
-            className="inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-semibold hover:border-primary/60 hover:bg-surface-2 transition">
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-semibold whitespace-nowrap hover:border-primary/60 hover:bg-surface-2 transition">
             <Repeat className="w-4 h-4" /> Edit squad
           </button>
           <Link to="/tactics"
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3 text-sm font-bold text-primary-foreground hover:shadow-[0_10px_40px_-10px_var(--crimson)] transition-all">
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3 text-sm font-bold text-primary-foreground whitespace-nowrap hover:shadow-[0_10px_40px_-10px_var(--crimson)] transition-all">
             Proceed to tactics <ArrowRight className="w-4 h-4" />
           </Link>
         </motion.div>

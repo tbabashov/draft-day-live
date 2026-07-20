@@ -268,49 +268,87 @@ function TournamentPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border/60 bg-background/70 backdrop-blur sticky top-0 z-30">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <h1 className="font-display text-2xl tracking-wide">CHAMPIONS CUP</h1>
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 py-2.5 sm:py-4 flex items-center justify-between gap-2 sm:gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <h1 className="font-display text-lg sm:text-2xl tracking-wide truncate">CHAMPIONS CUP</h1>
           </div>
-          <div className="flex items-center gap-2">
-            {bracket && !eliminated && !champion && (
-              <Link to="/tactics" className={btnGhost}>
-                <Users className="w-3.5 h-3.5" /> Manage team
-              </Link>
-            )}
-            {bracket && nextUserMatch && !eliminated && !champion && (
-              <button onClick={() => setPreviewMatch(nextUserMatch)} className={btnPrimary}>
-                <Play className="w-3.5 h-3.5" /> Play your {ROUND_NAMES[nextUserMatch.round]} tie
-              </button>
-            )}
-            {bracket && (eliminated || bracket.rounds[3][0].played) && (
-              <button onClick={() => setShowSummary(true)} className={btnGhost}>
-                Run summary
-              </button>
-            )}
-            {bracket && eliminated && (
-              <button onClick={restartEverything} className={btnPrimary}>
-                <RotateCcw className="w-3.5 h-3.5" /> Start over
-              </button>
-            )}
-            <Link to="/home" title="Home" className={btnGhost}>
-              <Home className="w-3.5 h-3.5" /> Home
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Full action set — desktop */}
+            <div className="hidden sm:flex items-center gap-2">
+              {bracket && !eliminated && !champion && (
+                <Link to="/tactics" className={btnGhost}>
+                  <Users className="w-3.5 h-3.5" /> Manage team
+                </Link>
+              )}
+              {bracket && nextUserMatch && !eliminated && !champion && (
+                <button onClick={() => setPreviewMatch(nextUserMatch)} className={btnPrimary}>
+                  <Play className="w-3.5 h-3.5" /> Play your {ROUND_NAMES[nextUserMatch.round]} tie
+                </button>
+              )}
+              {bracket && (eliminated || bracket.rounds[3][0].played) && (
+                <button onClick={() => setShowSummary(true)} className={btnGhost}>
+                  Run summary
+                </button>
+              )}
+              {bracket && eliminated && (
+                <button onClick={restartEverything} className={btnPrimary}>
+                  <RotateCcw className="w-3.5 h-3.5" /> Start over
+                </button>
+              )}
+            </div>
+            {/* Mobile: icons only — the big action sits in the bottom bar */}
+            <div className="flex sm:hidden items-center gap-2">
+              {bracket && !eliminated && !champion && (
+                <Link to="/tactics" title="Manage team" className={`${btnGhost} !px-3`}>
+                  <Users className="w-4 h-4" />
+                </Link>
+              )}
+              {bracket && (eliminated || bracket.rounds[3][0].played) && (
+                <button onClick={() => setShowSummary(true)} title="Run summary" className={`${btnGhost} !px-3`}>
+                  <Trophy className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+            <Link to="/home" title="Home" className={`${btnGhost} !px-3 sm:!px-7`}>
+              <Home className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="hidden sm:inline">Home</span>
             </Link>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
+      <main className="mx-auto max-w-7xl px-3 sm:px-6 py-5 sm:py-8 pb-28 sm:pb-8">
         {!bracket ? (
           <SetupPanel xi={squad.xi} onGenerate={generate} />
         ) : (
           <>
             <StatusBar bracket={bracket} userTeam={userTeam} userStatus={userStatus} champion={champion} />
             {!eliminated && !champion && <UnavailableStrip refresh={statusTick} />}
-            <BracketView bracket={bracket} activeMatchId={activeMatch?.id ?? null} onOpen={setActiveMatch} />
+            <div className="hidden lg:block">
+              <BracketView bracket={bracket} activeMatchId={activeMatch?.id ?? null} onOpen={setActiveMatch} />
+            </div>
+            <div className="lg:hidden">
+              <MobileBracket bracket={bracket} activeMatchId={activeMatch?.id ?? null} onOpen={setActiveMatch} />
+            </div>
           </>
         )}
       </main>
+
+      {/* Mobile bottom action bar — the tie you're about to play */}
+      {bracket && !champion && (
+        <div className="sm:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border bg-background/90 backdrop-blur-xl px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+          {nextUserMatch && !eliminated ? (
+            <button onClick={() => setPreviewMatch(nextUserMatch)}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)]">
+              <Play className="w-4 h-4" /> Play your {ROUND_NAMES[nextUserMatch.round]} tie
+            </button>
+          ) : eliminated ? (
+            <button onClick={restartEverything}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)]">
+              <RotateCcw className="w-4 h-4" /> Start over
+            </button>
+          ) : null}
+        </div>
+      )}
 
       <AnimatePresence>
         {previewMatch && previewSides && !liveMatch && (
@@ -447,28 +485,28 @@ function StatusBar({ bracket, userTeam, userStatus, champion }: {
   }
 
   return (
-    <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-surface p-4">
-      <div className="flex items-center gap-4">
+    <div className="mb-4 sm:mb-6 rounded-2xl border border-border bg-surface p-3 sm:p-4">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
         {userTeam && (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             <TeamCrest team={userTeam} size={40} />
             <div>
               <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Your squad</div>
-              <div className="font-display text-xl">OVR {userTeam.rating}</div>
+              <div className="font-display text-lg sm:text-xl">OVR {userTeam.rating}</div>
             </div>
           </div>
         )}
-        <div className="hidden sm:block h-10 w-px bg-border" />
-        <div>
+        <div className="hidden sm:block h-10 w-px bg-border shrink-0" />
+        <div className="min-w-0">
           <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Status</div>
-          <div className={`font-display text-xl ${tone}`}>{msg}</div>
+          <div className={`font-display text-base sm:text-xl leading-snug ${tone}`}>{msg}</div>
         </div>
         {userTeam && (
           <>
-            <div className="hidden sm:block h-10 w-px bg-border" />
-            <div>
+            <div className="hidden sm:block h-10 w-px bg-border shrink-0" />
+            <div className="min-w-0">
               <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Prediction</div>
-              <div className="font-display text-xl text-muted-foreground">
+              <div className="font-display text-base sm:text-xl text-muted-foreground leading-snug">
                 #{strengthRank(bracket.seeds, "user")} strongest · {STAGE_NAMES[expectedStage(strengthRank(bracket.seeds, "user"))]}
               </div>
             </div>
@@ -558,6 +596,49 @@ function BracketView({ bracket, activeMatchId, onOpen }: {
             })
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* Phones can't show a 4-round bracket side by side, so we show one round at a
+   time behind a segmented control — it opens on the round you're actually in. */
+const ROUND_SHORT = ["R16", "QF", "SF", "FINAL"];
+
+function MobileBracket({ bracket, activeMatchId, onOpen }: {
+  bracket: Bracket; activeMatchId: string | null; onOpen: (m: BracketMatch) => void;
+}) {
+  const liveRound = useMemo(() => {
+    const i = bracket.rounds.findIndex((r) => r.some((m) => !m.played));
+    return i < 0 ? bracket.rounds.length - 1 : i;
+  }, [bracket]);
+  const [round, setRound] = useState(liveRound);
+  useEffect(() => setRound(liveRound), [liveRound]);
+  const matches = bracket.rounds[round] ?? [];
+
+  return (
+    <div>
+      <div className="grid grid-cols-4 gap-1 rounded-full bg-surface border border-border p-1">
+        {ROUND_SHORT.map((label, i) => {
+          const userHere = bracket.rounds[i]?.some((m) => m.home?.id === "user" || m.away?.id === "user");
+          return (
+            <button
+              key={label}
+              onClick={() => setRound(i)}
+              className={`relative rounded-full py-2 font-mono text-[10px] uppercase tracking-wider transition ${
+                round === i ? "bg-primary text-primary-foreground shadow-[var(--shadow-glow)]" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {label}
+              {userHere && round !== i && <span className="absolute top-1 right-1.5 w-1.5 h-1.5 rounded-full bg-primary" />}
+            </button>
+          );
+        })}
+      </div>
+      <div className="mt-3 space-y-2">
+        {matches.map((m) => (
+          <MatchCard key={m.id} match={m} active={m.id === activeMatchId} onClick={() => m.played && onOpen(m)} />
+        ))}
       </div>
     </div>
   );

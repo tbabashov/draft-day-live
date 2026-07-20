@@ -19,8 +19,9 @@ export function RestartRunButton() {
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className={btnDanger}>
-        <RotateCcw className="w-3.5 h-3.5" /> Restart run
+      <button onClick={() => setOpen(true)} className={`${btnDanger} !px-3 sm:!px-7`} title="Restart run">
+        <RotateCcw className="w-3.5 h-3.5" />
+        <span className="hidden sm:inline">Restart run</span>
       </button>
       <AnimatePresence>
         {open && (

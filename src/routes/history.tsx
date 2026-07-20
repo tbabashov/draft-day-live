@@ -29,7 +29,7 @@ function HistoryPage() {
   return (
     <div className="min-h-screen bg-background text-foreground grain">
       <header className="sticky top-0 z-40 border-b border-border backdrop-blur-xl bg-background/70">
-        <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-between">
+        <div className="mx-auto max-w-5xl px-3 sm:px-6 py-2.5 sm:py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/home" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition">
               <Home className="w-4 h-4" /> Home
@@ -40,7 +40,7 @@ function HistoryPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-6 py-10">
+      <main className="mx-auto max-w-5xl px-3 sm:px-6 py-6 sm:py-10">
         {!records || records.totalRuns === 0 ? (
           <div className="text-center py-20">
             <Trophy className="w-14 h-14 mx-auto text-muted-foreground" />

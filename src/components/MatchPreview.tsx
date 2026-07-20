@@ -56,7 +56,7 @@ export function MatchPreview({ home, away, userSide, roundName, onKickOff, onBac
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 bg-background/95 backdrop-blur-md overflow-y-auto"
     >
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 py-8 min-h-full flex flex-col">
+      <div className="mx-auto max-w-4xl px-3 sm:px-6 py-5 sm:py-8 min-h-full flex flex-col">
         <div className="text-center">
           <div className="font-mono text-xs uppercase tracking-[0.3em] text-primary">{roundName} · Preview</div>
         </div>

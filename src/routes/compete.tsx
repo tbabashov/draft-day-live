@@ -24,7 +24,7 @@ function CompetePage() {
   return (
     <div className="min-h-screen bg-background text-foreground grain">
       <header className="sticky top-0 z-40 border-b border-border backdrop-blur-xl bg-background/70">
-        <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 py-2.5 sm:py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/tactics" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition">
               <ArrowLeft className="w-4 h-4" /> Tactics
@@ -43,10 +43,10 @@ function CompetePage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-6 py-16">
+      <main className="mx-auto max-w-4xl px-4 sm:px-6 py-10 sm:py-16">
         <div className="text-center">
-          <div className="font-mono text-xs uppercase tracking-widest text-primary">Squad locked · Tactics set</div>
-          <h1 className="mt-3 font-display text-6xl md:text-7xl leading-[0.9]">
+          <div className="font-mono text-[10px] sm:text-xs uppercase tracking-widest text-primary">Squad locked · Tactics set</div>
+          <h1 className="mt-3 font-display text-5xl sm:text-6xl md:text-7xl leading-[0.9]">
             How do you want<br /><span className="text-primary italic">to prove it?</span>
           </h1>
         </div>
@@ -58,7 +58,7 @@ function CompetePage() {
           </p>
         )}
 
-        <div className="mt-10 grid md:grid-cols-2 gap-6">
+        <div className="mt-8 sm:mt-10 grid md:grid-cols-2 gap-4 sm:gap-6">
           <CompetitionCard
             to="/tournament"
             icon={<Trophy className="w-8 h-8" />}
@@ -121,14 +121,14 @@ function CompetitionCard({ to, icon, title, tagline, body, points, delay, locked
         <div
           aria-disabled
           title="Start a new game to switch competitions"
-          className="block h-full rounded-2xl border border-border bg-surface p-8 opacity-50 cursor-not-allowed select-none"
+          className="block h-full rounded-2xl border border-border bg-surface p-5 sm:p-8 opacity-50 cursor-not-allowed select-none"
         >
           {inner}
         </div>
       ) : (
         <Link
           to={to}
-          className="group block h-full rounded-2xl border border-border bg-surface p-8 hover:border-primary/60 hover:bg-surface-2 transition-all hover:-translate-y-1 hover:shadow-[0_20px_60px_-20px_var(--crimson)]"
+          className="group block h-full rounded-2xl border border-border bg-surface p-5 sm:p-8 hover:border-primary/60 hover:bg-surface-2 transition-all hover:-translate-y-1 hover:shadow-[0_20px_60px_-20px_var(--crimson)]"
         >
           {inner}
         </Link>

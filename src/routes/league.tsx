@@ -271,35 +271,45 @@ function LeaguePage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border/60 bg-background/70 backdrop-blur sticky top-0 z-30">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <h1 className="font-display text-2xl tracking-wide">DRAFT LEAGUE</h1>
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 py-2.5 sm:py-4 flex items-center justify-between gap-2 sm:gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <h1 className="font-display text-lg sm:text-2xl tracking-wide truncate">DRAFT LEAGUE</h1>
           </div>
-          <div className="flex items-center gap-2">
-            {league && !seasonOver && (
-              <Link to="/tactics" className={btnGhost}>
-                <Users className="w-3.5 h-3.5" /> Manage team
-              </Link>
-            )}
-            {league && !seasonOver && nextRound >= 0 && (
-              <button onClick={playNext} className={btnPrimary}>
-                {userFixture ? <Play className="w-3.5 h-3.5" /> : <FastForward className="w-3.5 h-3.5" />}
-                {userFixture ? `Play matchday ${nextRound + 1}` : `Sim matchday ${nextRound + 1} (bye)`}
-              </button>
-            )}
-            {seasonOver && (
-              <button onClick={restartEverything} className={btnPrimary}>
-                <RotateCcw className="w-3.5 h-3.5" /> Start over
-              </button>
-            )}
-            <Link to="/home" title="Home" className={btnGhost}>
-              <Home className="w-3.5 h-3.5" /> Home
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="hidden sm:flex items-center gap-2">
+              {league && !seasonOver && (
+                <Link to="/tactics" className={btnGhost}>
+                  <Users className="w-3.5 h-3.5" /> Manage team
+                </Link>
+              )}
+              {league && !seasonOver && nextRound >= 0 && (
+                <button onClick={playNext} className={btnPrimary}>
+                  {userFixture ? <Play className="w-3.5 h-3.5" /> : <FastForward className="w-3.5 h-3.5" />}
+                  {userFixture ? `Play matchday ${nextRound + 1}` : `Sim matchday ${nextRound + 1} (bye)`}
+                </button>
+              )}
+              {seasonOver && (
+                <button onClick={restartEverything} className={btnPrimary}>
+                  <RotateCcw className="w-3.5 h-3.5" /> Start over
+                </button>
+              )}
+            </div>
+            {/* Mobile: icon only — matchday button lives in the bottom bar */}
+            <div className="flex sm:hidden items-center gap-2">
+              {league && !seasonOver && (
+                <Link to="/tactics" title="Manage team" className={`${btnGhost} !px-3`}>
+                  <Users className="w-4 h-4" />
+                </Link>
+              )}
+            </div>
+            <Link to="/home" title="Home" className={`${btnGhost} !px-3 sm:!px-7`}>
+              <Home className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="hidden sm:inline">Home</span>
             </Link>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 sm:px-6 py-8">
+      <main className="mx-auto max-w-5xl px-3 sm:px-6 py-5 sm:py-8 pb-28 sm:pb-8">
         {!league ? (
           <div className="max-w-2xl mx-auto text-center py-12">
             <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/30 px-4 py-1.5 text-xs font-semibold text-primary uppercase tracking-widest">
@@ -325,42 +335,50 @@ function LeaguePage() {
         ) : (
           <>
             {/* status */}
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-surface p-4">
-              <div className="flex items-center gap-6">
+            <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 sm:gap-4 rounded-2xl border border-border bg-surface p-3 sm:p-4">
+              <div className="grid grid-cols-4 gap-2 sm:flex sm:gap-6">
                 <div>
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Position</div>
-                  <div className="font-display text-2xl">#{userRow + 1}</div>
+                  <div className="text-[9px] sm:text-[10px] uppercase tracking-widest text-muted-foreground">
+                    <span className="sm:hidden">Pos</span><span className="hidden sm:inline">Position</span>
+                  </div>
+                  <div className="font-display text-xl sm:text-2xl">#{userRow + 1}</div>
                 </div>
                 <div>
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Points</div>
-                  <div className="font-display text-2xl">{table[userRow]?.pts ?? 0}</div>
+                  <div className="text-[9px] sm:text-[10px] uppercase tracking-widest text-muted-foreground">
+                    <span className="sm:hidden">Pts</span><span className="hidden sm:inline">Points</span>
+                  </div>
+                  <div className="font-display text-xl sm:text-2xl">{table[userRow]?.pts ?? 0}</div>
                 </div>
                 <div>
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Matchday</div>
-                  <div className="font-display text-2xl">{Math.min(nextRound + 1, totalRounds) || totalRounds}/{totalRounds}</div>
+                  <div className="text-[9px] sm:text-[10px] uppercase tracking-widest text-muted-foreground">
+                    <span className="sm:hidden">MD</span><span className="hidden sm:inline">Matchday</span>
+                  </div>
+                  <div className="font-display text-xl sm:text-2xl">{Math.min(nextRound + 1, totalRounds) || totalRounds}/{totalRounds}</div>
                 </div>
                 <div>
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Predicted finish</div>
-                  <div className="font-display text-2xl text-muted-foreground">#{userPredicted}</div>
+                  <div className="text-[9px] sm:text-[10px] uppercase tracking-widest text-muted-foreground">
+                    <span className="sm:hidden">Pred</span><span className="hidden sm:inline">Predicted finish</span>
+                  </div>
+                  <div className="font-display text-xl sm:text-2xl text-muted-foreground">#{userPredicted}</div>
                 </div>
               </div>
               {!seasonOver && (
-                <div className="flex items-center gap-3">
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Next opponent</div>
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0 border-t sm:border-t-0 border-border pt-3 sm:pt-0">
+                  <div className="text-[9px] sm:text-[10px] uppercase tracking-widest text-muted-foreground shrink-0">Next</div>
                   {userFixture ? (
                     (() => {
                       const oppId = userFixture.home === "user" ? userFixture.away : userFixture.home;
                       const opp = teamById.get(oppId)!;
                       return (
-                        <div className="flex items-center gap-2">
-                          {clubLogo(opp.id) && <img src={clubLogo(opp.id)} alt="" className="w-6 h-6 object-contain" />}
-                          <span className="font-display text-xl">{opp.name}</span>
-                          <span className="font-mono text-[10px] text-muted-foreground uppercase">{userFixture.home === "user" ? "home" : "away"}</span>
+                        <div className="flex items-center gap-2 min-w-0">
+                          {clubLogo(opp.id) && <img src={clubLogo(opp.id)} alt="" className="w-6 h-6 object-contain shrink-0" />}
+                          <span className="font-display text-lg sm:text-xl truncate">{opp.name}</span>
+                          <span className="font-mono text-[10px] text-muted-foreground uppercase shrink-0">{userFixture.home === "user" ? "home" : "away"}</span>
                         </div>
                       );
                     })()
                   ) : (
-                    <span className="font-display text-xl text-muted-foreground">Bye week</span>
+                    <span className="font-display text-lg sm:text-xl text-muted-foreground">Bye week</span>
                   )}
                 </div>
               )}
@@ -373,43 +391,45 @@ function LeaguePage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                    <th className="text-left px-4 py-2.5 w-10">#</th>
-                    <th className="text-center px-2 py-2.5 w-10" title="Predicted position">PR</th>
+                    <th className="text-left px-2 sm:px-4 py-2.5 w-8 sm:w-10">#</th>
+                    <th className="text-center px-2 py-2.5 w-10 hidden md:table-cell" title="Predicted position">PR</th>
                     <th className="text-left px-2 py-2.5">Club</th>
-                    <th className="text-center px-2 py-2.5 w-10">P</th>
-                    <th className="text-center px-2 py-2.5 w-10">W</th>
-                    <th className="text-center px-2 py-2.5 w-10">D</th>
-                    <th className="text-center px-2 py-2.5 w-10">L</th>
-                    <th className="text-center px-2 py-2.5 w-12 hidden sm:table-cell">GF</th>
-                    <th className="text-center px-2 py-2.5 w-12 hidden sm:table-cell">GA</th>
-                    <th className="text-center px-2 py-2.5 w-12">GD</th>
-                    <th className="text-center px-4 py-2.5 w-14">Pts</th>
+                    <th className="text-center px-1.5 sm:px-2 py-2.5 w-8 sm:w-10">P</th>
+                    <th className="text-center px-2 py-2.5 w-10 hidden sm:table-cell">W</th>
+                    <th className="text-center px-2 py-2.5 w-10 hidden sm:table-cell">D</th>
+                    <th className="text-center px-2 py-2.5 w-10 hidden sm:table-cell">L</th>
+                    <th className="text-center px-2 py-2.5 w-12 hidden md:table-cell">GF</th>
+                    <th className="text-center px-2 py-2.5 w-12 hidden md:table-cell">GA</th>
+                    <th className="text-center px-1.5 sm:px-2 py-2.5 w-10 sm:w-12">GD</th>
+                    <th className="text-center px-2 sm:px-4 py-2.5 w-11 sm:w-14">Pts</th>
                   </tr>
                 </thead>
                 <tbody>
                   {table.map((r, i) => (
                     <tr key={r.team.id}
                       className={`border-b border-border/40 last:border-b-0 ${r.team.isUser ? "bg-primary/10" : i % 2 ? "bg-surface-2/40" : ""}`}>
-                      <td className={`px-4 py-2 font-display ${i === 0 ? "text-[oklch(0.82_0.16_85)]" : "text-muted-foreground"}`}>{i + 1}</td>
-                      <td className="text-center px-2 py-2 font-mono text-[10px] text-muted-foreground tabular-nums">{predictedRank.get(r.team.id)}</td>
+                      <td className={`px-2 sm:px-4 py-2 font-display ${i === 0 ? "text-[oklch(0.82_0.16_85)]" : "text-muted-foreground"}`}>{i + 1}</td>
+                      <td className="text-center px-2 py-2 font-mono text-[10px] text-muted-foreground tabular-nums hidden md:table-cell">{predictedRank.get(r.team.id)}</td>
                       <td className="px-2 py-2">
                         <div className="flex items-center gap-2 min-w-0">
                           {clubLogo(r.team.id)
                             ? <img src={clubLogo(r.team.id)} alt="" className={`w-5 h-5 object-contain shrink-0 ${r.team.isUser ? "scale-110" : ""}`} />
                             : <span className="w-5 h-5 shrink-0 rounded grid place-items-center text-[8px] font-display border border-white/10"
                                 style={{ background: `linear-gradient(135deg, ${r.team.primary}, ${r.team.secondary})`, color: "#fff" }}>{r.team.abbr}</span>}
-                          <span className="truncate font-semibold">{r.team.name}</span>
+                          {/* abbreviation on phones, full name once there's room */}
+                          <span className="sm:hidden truncate font-semibold">{r.team.abbr}</span>
+                          <span className="hidden sm:inline truncate font-semibold">{r.team.name}</span>
                           {r.team.isUser && <span className="text-[9px] px-1 py-0.5 rounded bg-primary/20 text-primary uppercase font-bold shrink-0">You</span>}
                         </div>
                       </td>
-                      <td className="text-center px-2 py-2 tabular-nums">{r.p}</td>
-                      <td className="text-center px-2 py-2 tabular-nums">{r.w}</td>
-                      <td className="text-center px-2 py-2 tabular-nums">{r.d}</td>
-                      <td className="text-center px-2 py-2 tabular-nums">{r.l}</td>
-                      <td className="text-center px-2 py-2 tabular-nums hidden sm:table-cell">{r.gf}</td>
-                      <td className="text-center px-2 py-2 tabular-nums hidden sm:table-cell">{r.ga}</td>
-                      <td className="text-center px-2 py-2 tabular-nums">{r.gf - r.ga > 0 ? "+" : ""}{r.gf - r.ga}</td>
-                      <td className="text-center px-4 py-2 font-display text-lg tabular-nums">{r.pts}</td>
+                      <td className="text-center px-1.5 sm:px-2 py-2 tabular-nums">{r.p}</td>
+                      <td className="text-center px-2 py-2 tabular-nums hidden sm:table-cell">{r.w}</td>
+                      <td className="text-center px-2 py-2 tabular-nums hidden sm:table-cell">{r.d}</td>
+                      <td className="text-center px-2 py-2 tabular-nums hidden sm:table-cell">{r.l}</td>
+                      <td className="text-center px-2 py-2 tabular-nums hidden md:table-cell">{r.gf}</td>
+                      <td className="text-center px-2 py-2 tabular-nums hidden md:table-cell">{r.ga}</td>
+                      <td className="text-center px-1.5 sm:px-2 py-2 tabular-nums">{r.gf - r.ga > 0 ? "+" : ""}{r.gf - r.ga}</td>
+                      <td className="text-center px-2 sm:px-4 py-2 font-display text-base sm:text-lg tabular-nums">{r.pts}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -441,6 +461,24 @@ function LeaguePage() {
           </>
         )}
       </main>
+
+      {/* Mobile bottom action bar — advance the season from thumb reach */}
+      {league && (
+        <div className="sm:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border bg-background/90 backdrop-blur-xl px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+          {!seasonOver && nextRound >= 0 ? (
+            <button onClick={playNext}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)]">
+              {userFixture ? <Play className="w-4 h-4" /> : <FastForward className="w-4 h-4" />}
+              {userFixture ? `Play matchday ${nextRound + 1}` : `Sim matchday ${nextRound + 1} (bye)`}
+            </button>
+          ) : seasonOver ? (
+            <button onClick={restartEverything}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)]">
+              <RotateCcw className="w-4 h-4" /> Start over
+            </button>
+          ) : null}
+        </div>
+      )}
 
       <AnimatePresence>
         {previewFixture && previewSides && !liveFixture && (

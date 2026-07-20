@@ -194,17 +194,20 @@ function TacticsPage() {
     <div className="min-h-screen bg-background text-foreground grain">
       {/* Top bar */}
       <header className="sticky top-0 z-40 border-b border-border backdrop-blur-xl bg-background/70">
-        <div className="mx-auto max-w-[1600px] px-6 py-4 flex items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
+        <div className="mx-auto max-w-[1600px] px-3 sm:px-6 py-2.5 sm:py-4 flex items-center justify-between gap-2 sm:gap-6">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             {!manageMode && (
               <>
-                <Link to="/draft" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition">
-                  <ArrowLeft className="w-4 h-4" /> Draft
+                <Link to="/draft" title="Draft" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition shrink-0">
+                  <ArrowLeft className="w-4 h-4" /> <span className="hidden sm:inline">Draft</span>
                 </Link>
-                <div className="w-px h-6 bg-border" />
+                <div className="hidden sm:block w-px h-6 bg-border" />
               </>
             )}
-            <div className="font-display text-2xl tracking-widest">{manageMode ? "MANAGE TEAM" : "TACTICS"}</div>
+            <div className="font-display text-lg sm:text-2xl tracking-widest truncate">
+              <span className="sm:hidden">{manageMode ? "MANAGE" : "TACTICS"}</span>
+              <span className="hidden sm:inline">{manageMode ? "MANAGE TEAM" : "TACTICS"}</span>
+            </div>
             {!manageMode && (
               <div className="hidden md:flex items-center gap-2 rounded-full bg-surface border border-border px-3 py-1 font-mono text-xs text-muted-foreground">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary ticker-dot" />
@@ -212,13 +215,15 @@ function TacticsPage() {
               </div>
             )}
           </div>
-          <div className="flex items-start gap-6">
+          <div className="flex items-start gap-3 sm:gap-6 shrink-0">
             <div className="text-right">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Familiarity</div>
-              <div className="flex items-baseline justify-end gap-2">
-                <div className="font-display text-3xl leading-none">{fit}<span className="text-muted-foreground text-lg leading-none">%</span></div>
+              <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-muted-foreground">
+                <span className="sm:hidden">Fit</span><span className="hidden sm:inline">Familiarity</span>
               </div>
-              <div className="mt-1 h-1 w-28 rounded-full bg-surface-2 overflow-hidden ml-auto">
+              <div className="flex items-baseline justify-end gap-2">
+                <div className="font-display text-lg sm:text-3xl leading-none">{fit}<span className="text-muted-foreground text-xs sm:text-lg leading-none">%</span></div>
+              </div>
+              <div className="hidden sm:block mt-1 h-1 w-28 rounded-full bg-surface-2 overflow-hidden ml-auto">
                 <motion.div
                   className="h-full rounded-full"
                   style={{ background: fit >= 90 ? "oklch(0.75 0.19 145)" : fit >= 70 ? "oklch(0.8 0.16 85)" : "oklch(0.63 0.24 25)" }}
@@ -228,14 +233,16 @@ function TacticsPage() {
               </div>
             </div>
             <div className="text-right">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Squad strength</div>
+              <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-muted-foreground">
+                <span className="sm:hidden">Str</span><span className="hidden sm:inline">Squad strength</span>
+              </div>
               <div className="flex items-baseline justify-end gap-2">
                 {teamRating > 0 && teamRating < baseRating && (
-                  <span className="font-mono text-xs text-muted-foreground line-through">{baseRating}</span>
+                  <span className="hidden sm:inline font-mono text-xs text-muted-foreground line-through">{baseRating}</span>
                 )}
-                <div className="font-display text-3xl leading-none text-primary">{teamRating || "—"}</div>
+                <div className="font-display text-lg sm:text-3xl leading-none text-primary">{teamRating || "—"}</div>
               </div>
-              <div className="mt-1 h-1 w-28 rounded-full bg-surface-2 overflow-hidden ml-auto">
+              <div className="hidden sm:block mt-1 h-1 w-28 rounded-full bg-surface-2 overflow-hidden ml-auto">
                 <motion.div
                   className="h-full rounded-full"
                   style={{ background: fit >= 90 ? "oklch(0.75 0.19 145)" : fit >= 70 ? "oklch(0.8 0.16 85)" : "oklch(0.63 0.24 25)" }}
@@ -244,30 +251,34 @@ function TacticsPage() {
                 />
               </div>
             </div>
-            <Link to="/home" title="Home" className={btnGhost}>
-              <Home className="w-3.5 h-3.5" /> Home
+            <Link to="/home" title="Home" className={`${btnGhost} !px-3 sm:!px-7`}>
+              <Home className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Home</span>
             </Link>
             <RestartRunButton />
-            {manageMode ? (
-              <Link to={backTo} className={btnPrimary}>
-                Go back <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            ) : (
-              <Link to="/compete" className={btnPrimary}>
-                Choose competition <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            )}
+            {/* Primary CTA lives in the sticky bottom bar on mobile */}
+            <div className="hidden sm:block">
+              {manageMode ? (
+                <Link to={backTo} className={btnPrimary}>
+                  Go back <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              ) : (
+                <Link to="/compete" className={btnPrimary}>
+                  Choose competition <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1600px] px-6 py-8 grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-8">
+      <main className="mx-auto max-w-[1600px] px-3 sm:px-6 py-4 sm:py-8 pb-24 sm:pb-8 grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-6 sm:gap-8">
         {/* Pitch */}
         <section>
-          <div className="mb-3 flex items-baseline justify-between">
-            <h2 className="font-display text-3xl">Deploy your XI</h2>
-            <div className="font-mono text-xs text-muted-foreground uppercase tracking-widest">
-              {formation} · drag to swap · click to set role
+          <div className="mb-2 sm:mb-3 flex items-baseline justify-between gap-2">
+            <h2 className="font-display text-2xl sm:text-3xl">Deploy your XI</h2>
+            <div className="font-mono text-[10px] sm:text-xs text-muted-foreground uppercase tracking-widest text-right shrink-0">
+              <span className="sm:hidden">{formation} · tap a player</span>
+              <span className="hidden sm:inline">{formation} · drag to swap · click to set role</span>
             </div>
           </div>
           <Pitch>
@@ -414,6 +425,19 @@ function TacticsPage() {
           </div>
         </aside>
       </main>
+
+      {/* Mobile sticky CTA — the one action that matters, in thumb reach */}
+      <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/90 backdrop-blur-xl px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+        {manageMode ? (
+          <Link to={backTo} className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)]">
+            Go back <ArrowRight className="w-4 h-4" />
+          </Link>
+        ) : (
+          <Link to="/compete" className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)]">
+            Choose competition <ArrowRight className="w-4 h-4" />
+          </Link>
+        )}
+      </div>
     </div>
   );
 }
@@ -456,7 +480,7 @@ function Slider({ label, left, right, value, onChange }: {
 function Pitch({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="relative w-full max-w-[860px] mx-auto aspect-[10/8] rounded-2xl overflow-hidden border border-border"
+      className="relative w-full max-w-[860px] mx-auto aspect-[10/13] sm:aspect-[10/8] rounded-2xl overflow-hidden border border-border"
       style={{ background: "radial-gradient(ellipse at top, oklch(0.28 0.09 145) 0%, oklch(0.18 0.06 145) 60%, oklch(0.14 0.04 145) 100%)" }}
     >
       <div className="absolute inset-0 opacity-20"
@@ -508,23 +532,24 @@ function PitchSlot({ slot, player, role, captain, fit, selected, unavailable, dr
         <div className={`relative rounded-xl transition ${selected ? "ring-2 ring-primary" : ""} ${drop === "valid" ? "ring-2 ring-accent scale-105" : drop === "invalid" ? "opacity-35" : ""}`}>
           <MiniCard player={player} kind={slot.kind} />
           {captain && (
-            <div className="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-primary grid place-items-center text-primary-foreground shadow-lg">
-              <Crown className="w-3.5 h-3.5" />
+            <div className="absolute -top-1.5 -left-1.5 sm:-top-2 sm:-left-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary grid place-items-center text-primary-foreground shadow-lg">
+              <Crown className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </div>
           )}
           {unavailable && (
-            <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-primary grid place-items-center text-primary-foreground text-xs font-bold shadow-lg" title="Injured or suspended">!</div>
+            <div className="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary grid place-items-center text-primary-foreground text-[10px] sm:text-xs font-bold shadow-lg" title="Injured or suspended">!</div>
           )}
-          <div className="mt-1 px-1 py-0.5 rounded bg-black/60 backdrop-blur text-center">
+          {/* Role/fit chip clutters a phone pitch — only on desktop, or when tapped */}
+          <div className={`${selected ? "block" : "hidden"} sm:block mt-1 px-1 py-0.5 rounded bg-black/70 backdrop-blur text-center`}>
             <div className={`font-mono text-[8px] uppercase tracking-wider truncate max-w-[64px] ${unavailable ? "text-primary" : "text-white/85"}`}>{unavailable ? "unavailable" : role}</div>
             <div className={`font-mono text-[8px] ${fitColor}`}>fit {fit}%</div>
           </div>
         </div>
       ) : (
-        <div className={`w-16 aspect-[3/4] rounded-lg border-2 border-dashed grid place-items-center ${drop === "valid" ? "border-accent scale-105" : "border-white/25"}`}>
+        <div className={`w-12 sm:w-16 aspect-[3/4] rounded-lg border-2 border-dashed grid place-items-center ${drop === "valid" ? "border-accent scale-105" : "border-white/25"}`}>
           <div className="text-center">
-            <div className="text-2xl font-display text-white/40">·</div>
-            <div className="font-mono text-[8px] text-white/50 uppercase tracking-widest">{slot.kind}</div>
+            <div className="text-xl sm:text-2xl font-display text-white/40">·</div>
+            <div className="font-mono text-[7px] sm:text-[8px] text-white/50 uppercase tracking-widest">{slot.kind}</div>
           </div>
         </div>
       )}
@@ -563,13 +588,13 @@ function MiniCard({ player, kind }: { player: Player; kind?: SlotKind }) {
   const eff = kind ? effectiveOverall(player, kind) : player.overall;
   const downgraded = eff < player.overall;
   return (
-    <div className={`w-16 aspect-[3/4] rounded-lg bg-gradient-to-b ${s.grad} ${s.ring} p-1.5 relative overflow-hidden`}>
+    <div className={`w-12 sm:w-16 aspect-[3/4] rounded-lg bg-gradient-to-b ${s.grad} ${s.ring} p-1 sm:p-1.5 relative overflow-hidden`}>
       <div className={`font-display leading-none ${s.text}`}>
         <div className="flex items-baseline gap-1">
-          <span className="text-xl">{eff}</span>
-          {downgraded && <span className="text-[8px] line-through opacity-60">{player.overall}</span>}
+          <span className="text-base sm:text-xl">{eff}</span>
+          {downgraded && <span className="hidden sm:inline text-[8px] line-through opacity-60">{player.overall}</span>}
         </div>
-        <div className="text-[8px] font-bold">{player.position}</div>
+        <div className="text-[7px] sm:text-[8px] font-bold">{player.position}</div>
       </div>
       {downgraded && (
         <div className="absolute top-1 right-1 text-[10px] leading-none" title="Out of position">▼</div>

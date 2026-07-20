@@ -50,6 +50,8 @@ export function LiveMatch({ home, away, roundName, userSide, context = "cup", on
 
   const [, setTick] = useState(0);
   const [tab, setTab] = useState<"feed" | "coach">("feed");
+  /* Phones show one pane at a time instead of a cramped stack. */
+  const [mobilePane, setMobilePane] = useState<"pitch" | "feed" | "stats" | "coach">("pitch");
   const [userTactics, setUserTactics] = useState<TacticsSettings>(
     userSide === "home" ? home.tactics : away.tactics
   );
@@ -238,14 +240,14 @@ export function LiveMatch({ home, away, roundName, userSide, context = "cup", on
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className={`fixed inset-0 z-50 bg-background/95 backdrop-blur-md ${done || eng.phase === "pens" || spotScene ? "overflow-hidden" : "overflow-y-auto"}`}
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 min-h-full flex flex-col">
+      <div className="mx-auto max-w-7xl px-3 sm:px-6 py-3 sm:py-6 min-h-full flex flex-col">
         {/* Scoreboard */}
-        <div className="rounded-2xl border border-border bg-surface p-4 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+        <div className="rounded-2xl border border-border bg-surface p-3 sm:p-4 grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-4">
           <ScoreTeam entry={eng.home.entry} align="left" />
           <div className="text-center">
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{roundName}</div>
-            <div className="font-display text-5xl tabular-nums leading-none mt-1">
-              {eng.homeScore}<span className="text-muted-foreground mx-2">–</span>{eng.awayScore}
+            <div className="text-[9px] sm:text-[10px] uppercase tracking-widest text-muted-foreground truncate">{roundName}</div>
+            <div className="font-display text-4xl sm:text-5xl tabular-nums leading-none mt-1">
+              {eng.homeScore}<span className="text-muted-foreground mx-1.5 sm:mx-2">–</span>{eng.awayScore}
             </div>
             {eng.pens && (
               <div className="mt-1 font-mono text-sm tabular-nums text-[oklch(0.82_0.16_85)]">
@@ -263,17 +265,48 @@ export function LiveMatch({ home, away, roundName, userSide, context = "cup", on
         {/* Penalty shootout tracker sits directly under the score */}
         {eng.pens && <PensTracker eng={eng} />}
 
-        <div className="mt-4 grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-4 flex-1">
-          {/* Pitch */}
-          <div>
-            <LivePitch eng={eng} kits={kits} />
-            {/* Stat sheet */}
-            <StatSheet eng={eng} possPct={possPct} kits={kits} />
+        {/* Mobile pane switcher — one focused view at a time, like a native app */}
+        <div className="lg:hidden mt-3 grid grid-cols-4 gap-1 rounded-full bg-surface border border-border p-1">
+          {([
+            ["pitch", "Pitch"],
+            ["feed", "Live"],
+            ["stats", "Stats"],
+            ["coach", "Touchline"],
+          ] as const).map(([id, label]) => (
+            <button
+              key={id}
+              onClick={() => { setMobilePane(id); if (id === "feed" || id === "coach") setTab(id); }}
+              className={`rounded-full py-2 font-mono text-[10px] uppercase tracking-wider transition ${
+                mobilePane === id ? "bg-primary text-primary-foreground shadow-[var(--shadow-glow)]" : "text-muted-foreground"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-3 sm:mt-4 grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-4 flex-1">
+          {/* Pitch + stats */}
+          <div className={`${mobilePane === "pitch" || mobilePane === "stats" ? "block" : "hidden"} lg:block`}>
+            <div className={mobilePane === "stats" ? "hidden lg:block" : "block"}>
+              <LivePitch eng={eng} kits={kits} />
+              {/* On a phone the feed is a separate pane, so surface the latest
+                  beat here — you shouldn't have to switch tabs to follow the game. */}
+              {eng.events.length > 0 && (
+                <div className="lg:hidden mt-3 rounded-xl border border-border bg-surface p-3">
+                  <div className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground mb-1">Latest</div>
+                  <div className="text-sm leading-snug">{eng.events[eng.events.length - 1].text}</div>
+                </div>
+              )}
+            </div>
+            <div className={mobilePane === "pitch" ? "hidden lg:block" : "block"}>
+              <StatSheet eng={eng} possPct={possPct} kits={kits} />
+            </div>
           </div>
 
           {/* Right column: commentary / coach */}
-          <div className="flex flex-col rounded-2xl border border-border bg-surface overflow-hidden min-h-[420px] max-h-[60vh] lg:min-h-0 lg:max-h-[calc(100vh-12rem)]">
-            <div className="flex border-b border-border">
+          <div className={`${mobilePane === "feed" || mobilePane === "coach" ? "flex" : "hidden"} lg:flex flex-col rounded-2xl border border-border bg-surface overflow-hidden min-h-[62vh] max-h-[70vh] lg:min-h-0 lg:max-h-[calc(100vh-12rem)]`}>
+            <div className="hidden lg:flex border-b border-border">
               <TabBtn active={tab === "feed"} onClick={() => setTab("feed")} icon={<MessageSquareText className="w-3.5 h-3.5" />}>
                 Commentary
               </TabBtn>
@@ -620,7 +653,7 @@ type Kits = { home: string; away: string };
 function LivePitch({ eng, kits }: { eng: MatchEngine; kits: Kits }) {
   return (
     <div
-      className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden border border-border"
+      className="relative w-full aspect-[3/2] sm:aspect-[16/10] rounded-2xl overflow-hidden border border-border"
       style={{ background: "radial-gradient(ellipse at center, oklch(0.3 0.09 145) 0%, oklch(0.2 0.07 145) 65%, oklch(0.15 0.05 145) 100%)" }}
     >
       {/* mow stripes */}

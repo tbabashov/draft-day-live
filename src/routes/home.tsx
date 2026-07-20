@@ -82,7 +82,7 @@ function HomePage() {
         style={{ background: "radial-gradient(ellipse at 50% -10%, oklch(0.63 0.24 25 / 0.18), transparent 55%)" }} />
 
       <header className="relative border-b border-border/60 backdrop-blur-xl bg-background/60">
-        <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-between">
+        <div className="mx-auto max-w-5xl px-3 sm:px-6 py-2.5 sm:py-4 flex items-center justify-between">
           <div className="flex items-center gap-2 font-display text-2xl tracking-widest">
             <span className="w-2 h-2 rounded-full bg-primary ticker-dot" />
             GAFFER
@@ -99,7 +99,7 @@ function HomePage() {
         </div>
       </header>
 
-      <main className="relative mx-auto max-w-5xl px-6 py-12">
+      <main className="relative mx-auto max-w-5xl px-4 sm:px-6 py-8 sm:py-12">
         <div className="text-center">
           <div className="font-mono text-xs uppercase tracking-[0.3em] text-primary">The manager's office</div>
           <h1 className="mt-3 font-display text-6xl md:text-7xl leading-[0.9]">
