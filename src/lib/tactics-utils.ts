@@ -242,6 +242,16 @@ export function effectiveOverall(p: Player, kind: SlotKind): number {
   return Math.max(0, Math.round(p.overall - penalty));
 }
 
+/* How badly a player is played out of position, as an arrow count:
+   0 = natural, 1 = a near-enough role, 2 = a real cost, 3 = plain wrong. */
+export function oopSeverity(p: Player, kind: SlotKind): 0 | 1 | 2 | 3 {
+  const drop = p.overall - effectiveOverall(p, kind);
+  if (drop <= 0) return 0;
+  if (drop <= 2) return 1;
+  if (drop <= 4) return 2;
+  return 3;
+}
+
 // Squad strength = average effective rating of the deployed XI.
 export function squadStrength(assignments: Record<string, Player | undefined>, slots: Slot[]): { rating: number; fit: number } {
   const xi = slots.map((s) => ({ s, p: assignments[s.id] })).filter((x) => x.p) as { s: Slot; p: Player }[];

@@ -8,10 +8,11 @@ import {
 } from "@/lib/draft-utils";
 import {
   FORMATIONS, ROLES, DEFAULT_ROLE, PRESETS, DEFAULT_TACTICS,
-  remapXi, slotFitScore, effectiveOverall, squadStrength,
+  remapXi, slotFitScore, effectiveOverall, oopSeverity, squadStrength,
   type FormationId, type TacticsSettings,
 } from "@/lib/tactics-utils";
 import { RestartRunButton } from "@/components/RestartRun";
+import { OopArrows } from "@/components/OopArrows";
 import { UnavailableStrip } from "@/components/UnavailableStrip";
 import { loadSquadStatus, isUnavailable, type SquadStatus } from "@/lib/squad-status";
 import { activeCompetition } from "@/lib/run-state";
@@ -596,9 +597,7 @@ function MiniCard({ player, kind }: { player: Player; kind?: SlotKind }) {
         </div>
         <div className="text-[7px] sm:text-[8px] font-bold">{player.position}</div>
       </div>
-      {downgraded && (
-        <div className="absolute top-1 right-1 text-[10px] leading-none" title="Out of position">▼</div>
-      )}
+      {downgraded && <OopArrows n={kind ? oopSeverity(player, kind) : 0} />}
       <div className={`absolute inset-x-1 bottom-1 text-center font-black uppercase tracking-tight truncate text-[8px] ${s.text}`}>
         {shortName(player)}
       </div>

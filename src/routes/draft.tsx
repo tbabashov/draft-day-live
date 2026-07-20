@@ -6,8 +6,9 @@ import {
   ALL_PLAYERS, drawFive, eligibleFor, shuffle, tierOf, TIER_STYLES, shortName, pitchY,
   type Player, type Slot, type SlotKind,
 } from "@/lib/draft-utils";
-import { FORMATIONS, slotFitScore, squadStrength, effectiveOverall, type FormationId } from "@/lib/tactics-utils";
+import { FORMATIONS, slotFitScore, squadStrength, effectiveOverall, oopSeverity, type FormationId } from "@/lib/tactics-utils";
 import { DraftCard } from "@/components/DraftCard";
+import { OopArrows } from "@/components/OopArrows";
 import { RestartRunButton } from "@/components/RestartRun";
 import { clubLogo } from "@/lib/logos";
 
@@ -562,17 +563,15 @@ function MiniCard({ player, kind }: { player: Player; kind?: SlotKind }) {
   const eff = kind ? effectiveOverall(player, kind) : player.overall;
   const downgraded = eff < player.overall;
   return (
-    <div className={`w-16 aspect-[3/4] rounded-lg bg-gradient-to-b ${s.grad} ${s.ring} p-1.5 relative overflow-hidden`}>
+    <div className={`w-12 sm:w-16 aspect-[3/4] rounded-lg bg-gradient-to-b ${s.grad} ${s.ring} p-1 sm:p-1.5 relative overflow-hidden`}>
       <div className={`font-display leading-none ${s.text}`}>
         <div className="flex items-baseline gap-1">
-          <span className="text-xl">{eff}</span>
-          {downgraded && <span className="text-[8px] line-through opacity-60">{player.overall}</span>}
+          <span className="text-base sm:text-xl">{eff}</span>
+          {downgraded && <span className="hidden sm:inline text-[8px] line-through opacity-60">{player.overall}</span>}
         </div>
-        <div className="text-[8px] font-bold">{player.position}</div>
+        <div className="text-[7px] sm:text-[8px] font-bold">{player.position}</div>
       </div>
-      {downgraded && (
-        <div className="absolute top-1 right-1 text-[10px] leading-none" title="Out of position">▼</div>
-      )}
+      {downgraded && <OopArrows n={kind ? oopSeverity(player, kind) : 0} />}
       <div className={`absolute inset-x-1 bottom-1 text-center font-black uppercase tracking-tight truncate text-[8px] ${s.text}`}>
         {shortName(player)}
       </div>

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { effectiveOverall } from "@/lib/tactics-utils";
+import { effectiveOverall, oopSeverity } from "@/lib/tactics-utils";
 import { clubLogo } from "@/lib/logos";
 import { faceFor } from "@/lib/faces";
 import type { SideInit } from "@/lib/match-engine";
@@ -159,13 +159,14 @@ function Lineup({ side }: { side: SideInit }) {
           const kind = side.slots[i]?.kind ?? "CM";
           const eff = effectiveOverall(p, kind);
           const oop = eff < p.overall;
+          const sev = oopSeverity(p, kind);
           return (
             <li key={p.id} className="flex items-center justify-between gap-2 text-xs">
               <span className="truncate">
                 <span className="font-mono text-[9px] text-muted-foreground mr-1.5 inline-block w-7">{kind}</span>
                 {p.name.last || p.name.display}
               </span>
-              <span className={`font-mono tabular-nums ${oop ? "text-primary" : ""}`}>{eff}{oop && " ▼"}</span>
+              <span className={`font-mono tabular-nums ${oop ? "text-primary" : ""}`}>{eff}{oop && " " + "▼".repeat(sev)}</span>
             </li>
           );
         })}
