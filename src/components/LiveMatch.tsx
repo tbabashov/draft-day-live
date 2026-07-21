@@ -15,7 +15,8 @@ import goalIcon from "@/assets/icon-goal.png";
 import ballIcon from "@/assets/icon-ball.png";
 import saveIcon from "@/assets/icon-save.png";
 import whistleIcon from "@/assets/icon-whistle.png";
-import injuryIcon from "@/assets/icon-injury.png";
+import injurySeriousIcon from "@/assets/icon-injury-serious.png";
+import injuryMinorIcon from "@/assets/icon-injury-minor.png";
 
 export type LiveResult = {
   homeScore: number;
@@ -856,7 +857,10 @@ function eventBadge(ev: LiveEvent, userSide: "home" | "away") {
     case "red":
       return <span className="w-3 h-4 rounded-[2px] bg-primary shadow-[0_0_4px_var(--crimson)]" />;
     case "injury":
-      return <img src={injuryIcon} alt="Injury" className="w-6 h-6 object-contain" />;
+      // Ambulance when the knock ends their match, plaster when they run it off.
+      return ev.injurySerious
+        ? <img src={injurySeriousIcon} alt="Serious injury" title="Forced off" className="w-6 h-6 object-contain" />
+        : <img src={injuryMinorIcon} alt="Knock" title="Playing on" className="w-5 h-5 object-contain" />;
     case "var": {
       const o = ev.varOutcome;
       return (

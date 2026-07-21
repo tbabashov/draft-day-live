@@ -1,4 +1,5 @@
 import { loadSquadStatus } from "@/lib/squad-status";
+import injuryIcon from "@/assets/icon-injury.png";
 
 /* Shows who's suspended or injured for the next match. `refresh` is any value
    that changes when a match completes, forcing a re-read of the store. */
@@ -16,7 +17,9 @@ export function UnavailableStrip({ refresh }: { refresh?: unknown }) {
       <div className="flex flex-wrap gap-2">
         {rows.map((r) => (
           <span key={r.id} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1 text-xs">
-            <span className={r.kind === "ban" ? "w-2.5 h-3.5 rounded-[2px] bg-primary" : "font-bold text-[oklch(0.8_0.17_45)]"}>{r.kind === "ban" ? "" : "+"}</span>
+            {r.kind === "ban"
+              ? <span className="w-2.5 h-3.5 rounded-[2px] bg-primary" />
+              : <img src={injuryIcon} alt="" className="w-3.5 h-3.5 object-contain" />}
             <span className="font-semibold">{r.name}</span>
             <span className="font-mono text-[10px] text-muted-foreground">{r.matches} {r.matches === 1 ? "match" : "matches"}</span>
           </span>

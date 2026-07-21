@@ -571,7 +571,7 @@ function MiniCard({ player, kind }: { player: Player; kind?: SlotKind }) {
         </div>
         <div className="text-[7px] sm:text-[8px] font-bold">{player.position}</div>
       </div>
-      {downgraded && <OopArrows n={kind ? oopSeverity(player, kind) : 0} />}
+      {downgraded && <OopArrows n={kind ? oopSeverity(player, kind) : 0} className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1" />}
       <div className={`absolute inset-x-1 bottom-1 text-center font-black uppercase tracking-tight truncate text-[8px] ${s.text}`}>
         {shortName(player)}
       </div>

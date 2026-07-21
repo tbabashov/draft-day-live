@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { effectiveOverall, oopSeverity } from "@/lib/tactics-utils";
 import { clubLogo } from "@/lib/logos";
 import { faceFor } from "@/lib/faces";
+import { OopArrows } from "@/components/OopArrows";
 import type { SideInit } from "@/lib/match-engine";
 import type { Player, Slot } from "@/lib/draft-utils";
 
@@ -166,7 +167,12 @@ function Lineup({ side }: { side: SideInit }) {
                 <span className="font-mono text-[9px] text-muted-foreground mr-1.5 inline-block w-7">{kind}</span>
                 {p.name.last || p.name.display}
               </span>
-              <span className={`font-mono tabular-nums ${oop ? "text-primary" : ""}`}>{eff}{oop && " " + "▼".repeat(sev)}</span>
+              {/* Arrows sit to the left of a fixed-width number, so the ratings
+                  stay in one clean vertical line whether or not there's a marker. */}
+              <span className="flex items-center gap-1 shrink-0">
+                <OopArrows n={sev} size="w-[9px]" />
+                <span className={`font-mono tabular-nums w-5 text-right ${oop ? "text-primary" : ""}`}>{eff}</span>
+              </span>
             </li>
           );
         })}

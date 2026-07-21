@@ -1,21 +1,39 @@
-/* Out-of-position marker: one arrow for a near-enough role, two when it
-   genuinely costs, three when the player is plain wrong there. Red so it reads
-   as a warning against the gold/silver card art. */
-export function OopArrows({ n, className = "" }: { n: number; className?: string }) {
+/* Out-of-position marker: one chevron for a near-enough role, two when it
+   genuinely costs, three when the player is plain wrong there.
+
+   Drawn inline rather than loaded as images — these render as small as 9px on a
+   pitch card, where an SVG stays crisp and can be filled red directly. The path
+   is the supplied single-chevron asset, normalised to a 640x448 tile; stacked
+   copies use a 336 pitch (0.75 of the tile) so they nest exactly like the
+   supplied double/triple artwork. */
+
+const CHEVRON = "M512 0 L320 192 L128 0 L0 128 L320 448 L640 128 Z";
+const TILE_W = 640;
+const TILE_H = 448;
+const PITCH = 336; // 0.75 x tile height — measured off the double/triple assets
+
+/* Sized by width so a single chevron and a triple stack read as the same
+   mark; `size` lets a caller cap it (a 9px triple is 15.75px tall, which
+   still fits a 16px line box). */
+export function OopArrows({ n, className = "", size = "w-[9px] sm:w-[11px]" }: {
+  n: number; className?: string; size?: string;
+}) {
   if (n <= 0) return null;
+  const count = Math.min(n, 3);
   const label =
-    n === 1 ? "Slightly out of position" : n === 2 ? "Out of position" : "Badly out of position";
+    count === 1 ? "Slightly out of position" : count === 2 ? "Out of position" : "Badly out of position";
   return (
-    <div
-      title={label}
+    <svg
+      viewBox={`0 0 ${TILE_W} ${TILE_H + (count - 1) * PITCH}`}
+      role="img"
       aria-label={label}
-      className={`absolute top-0.5 right-0.5 sm:top-1 sm:right-1 flex flex-col items-center
-                  leading-[0.62] text-[9px] sm:text-[10px] text-[oklch(0.66_0.25_25)]
-                  drop-shadow-[0_1px_1px_rgba(0,0,0,0.9)] ${className}`}
+      className={`shrink-0 h-auto ${size} ${className}`}
+      style={{ filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.85))" }}
     >
-      {Array.from({ length: n }, (_, i) => (
-        <span key={i}>▼</span>
+      <title>{label}</title>
+      {Array.from({ length: count }, (_, i) => (
+        <path key={i} d={CHEVRON} transform={`translate(0 ${i * PITCH})`} fill="oklch(0.63 0.24 25)" />
       ))}
-    </div>
+    </svg>
   );
 }

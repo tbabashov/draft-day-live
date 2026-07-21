@@ -326,6 +326,7 @@ export type LiveEvent = {
   penScored?: boolean;   // set on shootout kicks
   swaps?: { on: string; off: string }[]; // substitutions: who came on / went off
   varOutcome?: "check" | "given" | "overturned"; // VAR verdict, for the icon
+  injurySerious?: boolean; // true when the knock forces them off, for the icon
 };
 
 export type SideInit = {
@@ -874,6 +875,7 @@ export class MatchEngine {
           victim.stamina = Math.max(0, victim.stamina - 25);
           this.disciplineLog.push({ side, playerId: victim.p.id, name: lastName(victim.p), kind: "injury", severity: 0 });
           this.push("injury", say("injuryMinor", { player: lastName(victim.p) }), side);
+          this.events[this.events.length - 1].injurySerious = false;
         } else {
           this.disciplineLog.push({ side, playerId: victim.p.id, name: lastName(victim.p), kind: "injury", severity: 1 });
           const inP = s.subsMade < 5 ? this.bestBenchFor(s, victim.slot.kind) : null;
@@ -882,9 +884,11 @@ export class MatchEngine {
             this.applySub(s, victim, inP);
             this.push("injury", say("injurySub", { player: offName, team: s.entry.name, on: lastName(inP) }), side);
             this.events[this.events.length - 1].swaps = [{ on: lastName(inP), off: offName }];
+            this.events[this.events.length - 1].injurySerious = true;
           } else {
             victim.off = true;
             this.push("injury", say("injuryNoSub", { player: lastName(victim.p), team: s.entry.name }), side);
+            this.events[this.events.length - 1].injurySerious = true;
             if (this.carrier >= 0 && this.side(this.possession).players[this.carrier]?.off) {
               this.carrier = this.nearestTo(this.possession, this.ball.x, this.ball.y);
             }
