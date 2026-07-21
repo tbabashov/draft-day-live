@@ -1,9 +1,37 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Easing } from "framer-motion";
 import standsImg from "@/assets/penalty-stands.webp";
 
 type Dir = "left" | "center" | "right";
 export type PenAnim = { dir: Dir; keeperDir: Dir; scored: boolean };
+
+/* ---- dive choreography -------------------------------------------------
+   A dive only reads as a dive rather than a jump if it plays as separate
+   beats, each with its own easing, and if the limbs run on their own clocks:
+   the glove leads the body, the legs trail the torso. All the fractions below
+   are of DIVE_S, so the beats stay legible next to each other.
+
+     read    the keeper picks a side — small crouch, weight onto that leg
+     load    hips drop, arms pull back
+     launch  explosive push off the loaded leg, body starts rotating
+     reach   full extension in the air; this is where the ball arrives
+     impact  hands take the ball, body keeps rotating into the ground
+     land    absorb and settle                                            */
+const DIVE_S = 1;
+const BALL_HIT = 0.45; // ball crosses the line — the glove has to be there too
+const P = { read: 0.1, load: 0.19, launch: 0.32, reach: 0.46, impact: 0.68 };
+const BEATS = [0, P.read, P.load, P.launch, P.reach, P.impact, 1];
+
+const EXPLODE: Easing = [0.1, 0.82, 0.28, 1]; // sharp ease-out — the push off the turf
+const SETTLE: Easing = [0.32, 1.3, 0.62, 1];  // lands with a little overshoot
+const DEFLECT: Easing = [0.12, 0.72, 0.3, 1]; // ball leaves the glove fast, then slows
+// One easing per beat: settle in, drop, explode, coast, fall, absorb.
+const BODY_EASE: Easing[] = ["easeInOut", "easeIn", EXPLODE, "linear", "easeIn", SETTLE];
+const LIFT_EASE: Easing[] = ["easeInOut", "easeIn", EXPLODE, "easeOut", "easeIn", SETTLE];
+const PUSH_EASE: Easing[] = ["linear", EXPLODE, "linear", "easeOut"];
+const ARM_EASE: Easing[] = ["easeIn", EXPLODE, SETTLE];
+
+const dirSign = (d: Dir) => (d === "left" ? -1 : d === "right" ? 1 : 0);
 
 /* A big 3D-ish penalty scene: a goal in front of you split into three zones.
    Pick one, the ball flies, the keeper dives, and you sweat the result. */
@@ -166,41 +194,54 @@ export function PenaltyShootout({ taker, homeAbbr, awayAbbr, home, away, userIsH
             <div className="absolute -right-[3%] -top-[3%] w-[3%] h-[106%] rounded bg-gradient-to-l from-white to-white/70 shadow-[0_0_10px_rgba(255,255,255,0.4)]" />
             <div className="absolute -left-[3%] -top-[3%] w-[106%] h-[7%] rounded bg-gradient-to-b from-white to-white/70 shadow-[0_0_10px_rgba(255,255,255,0.4)]" />
 
-            {/* keeper */}
+            {/* Keeper. The body carries position and the spine rotation; every
+                limb animates on its own clock inside <Keeper>. Nothing waits
+                for the ball — the keeper commits at the kick and is at full
+                stretch as it arrives. */}
             <motion.div
               className="absolute bottom-[2%] z-10 origin-bottom"
               style={{ height: "78%" }}
               initial={false}
-              animate={anim
-                ? {
-                    left: `${keeperX}%`,   // slide toward the corner
-                    x: "-50%",
-                    // explode toward the corner: rotate + leap
-                    rotate: anim.keeperDir === "left" ? [0, 4, -72] : anim.keeperDir === "right" ? [0, -4, 72] : [0, 0, 0],
-                    y: anim.keeperDir === "center" ? [0, 4, -16] : [0, 6, -22],
-                    scale: anim.keeperDir === "center" ? [1, 0.96, 1.1] : [1, 0.94, 1.14],
-                  }
-                : { left: "50%", x: "-50%", rotate: 0, y: [0, -3, 0], scale: 1 }}
+              animate={anim ? diveBody(anim.keeperDir, keeperX) : { left: "50%", x: "-50%", rotate: 0, y: [0, -3, 0], scaleX: 1, scaleY: 1 }}
               transition={anim
-                ? { duration: 0.52, delay: 0.22, times: [0, 0.22, 1], ease: [0.45, 0, 0.25, 1], left: { duration: 0.52, delay: 0.22, ease: [0.3, 0, 0.2, 1] } }
+                ? {
+                    // The lateral push doesn't start until the legs have loaded.
+                    left: { duration: DIVE_S, times: [0, P.load, P.launch, P.impact, 1], ease: PUSH_EASE },
+                    rotate: { duration: DIVE_S, times: BEATS, ease: BODY_EASE },
+                    y: { duration: DIVE_S, times: BEATS, ease: LIFT_EASE },
+                    scaleX: { duration: DIVE_S, times: BEATS, ease: "easeInOut" },
+                    scaleY: { duration: DIVE_S, times: BEATS, ease: "easeInOut" },
+                    x: { duration: 0 },
+                  }
                 : { y: { duration: 2.2, repeat: Infinity, ease: "easeInOut" }, left: { duration: 0.3 } }}
             >
-              <Keeper dir={anim?.keeperDir ?? null} />
+              <Keeper dir={anim?.keeperDir ?? null} saved={!!anim && !anim.scored} />
             </motion.div>
           </div>
 
-          {/* ball on the spot / in flight */}
-          <motion.div
-            className="absolute z-20"
-            style={{ left: `${ballTargetX}%`, bottom: "14%" }}
-            initial={false}
-            animate={anim
-              ? { left: `${ballTargetX}%`, bottom: anim.scored ? "40%" : "34%", scale: 0.42, x: "-50%" }
-              : { left: "50%", bottom: "14%", scale: 1, x: "-50%" }}
-            transition={{ duration: anim ? 0.45 : 0.3, ease: anim ? "easeIn" : "easeOut" }}
-          >
-            <Ball />
-          </motion.div>
+          {/* Ball on the spot / in flight. It sits in a box exactly as wide as
+              the goal so its corners share a coordinate space with the keeper
+              (who lives inside the goal) — otherwise the two aim at different
+              points and the ball sails past a glove that looked like it was
+              there. */}
+          <div className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 h-full w-[88%] sm:w-[76%] z-20">
+            <motion.div
+              className="absolute"
+              style={{ left: "50%", bottom: "14%" }}
+              initial={false}
+              animate={anim ? ballFlight(anim) : { left: "50%", bottom: "14%", scale: 1, rotate: 0, x: "-50%" }}
+              transition={anim
+                ? {
+                    // Struck hard, then either nestles in the net or is beaten
+                    // away — the second leg only exists after contact.
+                    default: { duration: DIVE_S, times: [0, BALL_HIT, 1], ease: ["easeIn", anim.scored ? "easeOut" : DEFLECT] as Easing[] },
+                    x: { duration: 0 },
+                  }
+                : { duration: 0.3, ease: "easeOut" }}
+            >
+              <Ball />
+            </motion.div>
+          </div>
         </div>
       </div>
 
@@ -241,6 +282,40 @@ export function PenaltyShootout({ taker, homeAbbr, awayAbbr, home, away, userIsH
   );
 }
 
+/* Whole-body motion. Keyframes line up with BEATS; each property gets its own
+   easing per beat back where the transition is declared. */
+function diveBody(dir: Dir, targetX: number) {
+  const s = dirSign(dir);
+  const toward = (f: number) => `${50 + (targetX - 50) * f}%`;
+  return {
+    // The hips barely travel. A keeper as tall as this one covers nearly the
+    // whole centre-to-corner distance just by going horizontal — send the feet
+    // all the way and he lands outside his own post.
+    left: ["50%", "50%", toward(0.02), toward(0.13), toward(0.18)],
+    x: "-50%",
+    // Spine: leans onto the diving leg, then swings through to horizontal
+    rotate: [0, s * 5, s * 8, s * 30, s * 70, s * 84, s * 88],
+    // Hips drop into the crouch, the push throws them up, gravity takes them back
+    y: s === 0 ? [0, 3, 10, -20, -36, -14, 2] : [0, 3, 9, -12, -28, -14, 3],
+    // Squash into the load, stretch out of it
+    scaleY: [1, 0.95, 0.88, 1.07, 1.02, 1, 1],
+    scaleX: [1, 1.02, 1.07, 0.96, 1, 1, 1],
+  };
+}
+
+/* Ball: spot -> corner (arriving at BALL_HIT) -> net, or beaten away by the
+   glove it just ran into. */
+function ballFlight(anim: PenAnim) {
+  const x = { left: 20, center: 50, right: 80 }[anim.dir];
+  const away = dirSign(anim.dir) || 1; // a centre parry still has to go somewhere
+  // Contact height is set from the keeper's measured reach (the glove passes
+  // bottom ~65% of the scene as the ball lands), so the two actually meet
+  // inside the goal mouth instead of the ball crossing under his feet.
+  return anim.scored
+    ? { left: [`50%`, `${x}%`, `${x}%`], bottom: ["14%", "60%", "62%"], scale: [1, 0.42, 0.38], rotate: [0, 400, 470], x: "-50%" }
+    : { left: [`50%`, `${x}%`, `${x + away * 26}%`], bottom: ["14%", "60%", "26%"], scale: [1, 0.44, 0.62], rotate: [0, 400, 780], x: "-50%" };
+}
+
 function PenTracker({ abbr, row, you }: { abbr: string; row: (boolean | null)[]; you?: boolean }) {
   return (
     <div className="flex items-center gap-2.5">
@@ -273,60 +348,118 @@ function Ball() {
   );
 }
 
-function Keeper({ dir }: { dir: "left" | "center" | "right" | null }) {
-  // Distinct keeper kit + bright gloves. Arms react to the dive.
-  const JERSEY = "#12b981", JERSEY_D = "#0b7a58", SKIN = "#e8b98f", SHORT = "#0c1220", GLOVE = "#f4e04a";
-  const diving = dir === "left" || dir === "right";
+const KIT = { jersey: "#12b981", jerseyD: "#0b7a58", skin: "#e8b98f", short: "#0c1220", glove: "#f4e04a" };
 
-  // Arm/glove positions (SVG coords, viewBox 0 0 100 150).
-  // Ready: both arms out and slightly up. Dive: leading arm reaches the corner.
-  const arms = (() => {
-    if (dir === "center") {
-      // both hands up
-      return { l: { x: 30, y: 34 }, r: { x: 70, y: 34 } };
-    }
-    if (dir === "left") {
-      return { l: { x: 10, y: 30 }, r: { x: 58, y: 66 } }; // left glove reaching up-out
-    }
-    if (dir === "right") {
-      return { l: { x: 42, y: 66 }, r: { x: 90, y: 30 } };
-    }
-    return { l: { x: 20, y: 52 }, r: { x: 80, y: 52 } }; // ready stance
-  })();
+/* One arm, pivoting at the shoulder. Canonical pose hangs straight down, so
+   every pose below is a single rotation. The arm pulls back on the load before
+   it reaches — and the reaching arm is at full stretch a quarter of the way
+   into the flight, while the torso is still turning. */
+function KeeperArm({ x, ready, target, leads, diving, clutch }: {
+  x: number; ready: number; target: number; leads: boolean; diving: boolean; clutch: boolean;
+}) {
+  const pull = ready - Math.sign(target - ready) * 12;
+  return (
+    <motion.g
+      style={{ originX: `${x}px`, originY: "50px", transformBox: "view-box" }}
+      initial={false}
+      animate={{ rotate: diving ? [ready, pull, target * 1.03, target] : ready }}
+      transition={diving
+        ? { duration: DIVE_S, times: [0, P.load, leads ? 0.35 : P.reach + 0.08, 1], ease: ARM_EASE }
+        : { duration: 0.45, ease: "easeOut" }}
+    >
+      <line x1={x} y1={50} x2={x} y2={82} stroke={KIT.jersey} strokeWidth={8} strokeLinecap="round" />
+      {/* the glove clutches at the moment of contact */}
+      <motion.circle
+        cx={x} cy={82} r={7} fill={KIT.glove} stroke="#b9a91f" strokeWidth={1}
+        style={{ originX: `${x}px`, originY: "82px", transformBox: "view-box" }}
+        initial={false}
+        animate={{ scale: clutch ? [1, 1, 1.45, 1.15, 1.15] : 1 }}
+        transition={clutch
+          ? { duration: DIVE_S, times: [0, BALL_HIT - 0.03, BALL_HIT + 0.05, BALL_HIT + 0.14, 1], ease: "easeOut" }
+          : { duration: 0.3 }}
+      />
+    </motion.g>
+  );
+}
+
+/* Keeper rig. Every limb is a group on its own clock: the glove leads, the
+   legs trail the spine, the head hangs back to keep its eyes on the ball.
+   That lag between parts is most of what separates a dive from a jump. */
+function Keeper({ dir, saved }: { dir: Dir | null; saved: boolean }) {
+  const diving = dir !== null;
+  const s = dir ? dirSign(dir) : 0;
+  const centre = dir === "center";
+
+  const READY_L = 58, READY_R = -58;
+  const arm = dir === "left" ? { l: 166, r: -32 } : dir === "right" ? { l: 32, r: -166 } : { l: 148, r: -148 };
+  const leadsL = dir === "left" || centre;
+  const leadsR = dir === "right" || centre;
+  // Draw order: the reaching arm goes in front of the body, the trailing one
+  // behind it. Standing still, both sit in front.
+  const frontL = !diving || leadsL;
+  const frontR = !diving || leadsR;
+
+  const beatTx = { duration: DIVE_S, times: BEATS, ease: BODY_EASE };
+  const pushTx = { duration: 0.4, delay: P.load * DIVE_S, ease: EXPLODE };
 
   return (
     <svg viewBox="0 0 100 150" className="h-full w-auto overflow-visible" style={{ filter: "drop-shadow(0 6px 10px rgba(0,0,0,0.45))" }}>
-      {/* legs */}
-      {diving ? (
-        <>
-          <rect x="40" y="98" width="13" height="46" rx="6" fill={SHORT} transform="rotate(18 46 100)" />
-          <rect x="52" y="100" width="13" height="42" rx="6" fill={SHORT} transform="rotate(-8 58 100)" />
-        </>
-      ) : (
-        <>
-          <rect x="38" y="100" width="12" height="48" rx="5" fill={SHORT} />
-          <rect x="50" y="100" width="12" height="48" rx="5" fill={SHORT} />
-        </>
-      )}
-      {/* boots */}
-      <ellipse cx={diving ? 45 : 44} cy="146" rx="8" ry="4" fill="#111" />
-      <ellipse cx={diving ? 60 : 56} cy="146" rx="8" ry="4" fill="#111" />
+      {/* legs — lag behind the spine, then catch up on the way down */}
+      <motion.g
+        style={{ originX: "50px", originY: "102px", transformBox: "view-box" }}
+        initial={false}
+        animate={{ rotate: diving ? [0, -s * 3, -s * 9, -s * 24, -s * 17, -s * 6, 0] : 0 }}
+        transition={diving ? beatTx : { duration: 0.4 }}
+      >
+        <motion.g
+          style={{ originX: "45px", originY: "102px", transformBox: "view-box" }}
+          initial={false}
+          animate={{ rotate: diving ? (centre ? -15 : -s * 9) : 0 }}
+          transition={diving ? pushTx : { duration: 0.4 }}
+        >
+          <rect x="39" y="98" width="13" height="50" rx="6" fill={KIT.short} />
+          <ellipse cx="45.5" cy="147" rx="8" ry="4" fill="#111" />
+        </motion.g>
+        <motion.g
+          style={{ originX: "57px", originY: "102px", transformBox: "view-box" }}
+          initial={false}
+          animate={{ rotate: diving ? (centre ? 15 : -s * 3) : 0 }}
+          transition={diving ? pushTx : { duration: 0.4 }}
+        >
+          <rect x="51" y="98" width="13" height="50" rx="6" fill={KIT.short} />
+          <ellipse cx="57.5" cy="147" rx="8" ry="4" fill="#111" />
+        </motion.g>
+      </motion.g>
 
-      {/* torso */}
-      <path d="M34 52 Q34 44 42 42 L58 42 Q66 44 66 52 L64 104 Q50 110 36 104 Z"
-        fill={JERSEY} stroke={JERSEY_D} strokeWidth="1.5" />
-      <path d="M50 44 L50 104" stroke={JERSEY_D} strokeWidth="1" opacity="0.5" />
+      {/* trailing arm sits behind the body */}
+      {!frontL && <KeeperArm x={40} ready={READY_L} target={arm.l} leads={false} diving={diving} clutch={false} />}
+      {!frontR && <KeeperArm x={60} ready={READY_R} target={arm.r} leads={false} diving={diving} clutch={false} />}
 
-      {/* arms (shoulder -> glove) */}
-      <line x1="40" y1="50" x2={arms.l.x} y2={arms.l.y} stroke={JERSEY} strokeWidth="8" strokeLinecap="round" />
-      <line x1="60" y1="50" x2={arms.r.x} y2={arms.r.y} stroke={JERSEY} strokeWidth="8" strokeLinecap="round" />
-      {/* gloves */}
-      <circle cx={arms.l.x} cy={arms.l.y} r="7" fill={GLOVE} stroke="#b9a91f" strokeWidth="1" />
-      <circle cx={arms.r.x} cy={arms.r.y} r="7" fill={GLOVE} stroke="#b9a91f" strokeWidth="1" />
+      {/* torso — arches into the dive slightly ahead of the legs */}
+      <motion.g
+        style={{ originX: "50px", originY: "102px", transformBox: "view-box" }}
+        initial={false}
+        animate={{ rotate: diving ? [0, 0, s * 2, -s * 3, -s * 8, -s * 4, 0] : 0 }}
+        transition={diving ? beatTx : { duration: 0.4 }}
+      >
+        <path d="M34 52 Q34 44 42 42 L58 42 Q66 44 66 52 L64 104 Q50 110 36 104 Z"
+          fill={KIT.jersey} stroke={KIT.jerseyD} strokeWidth="1.5" />
+        <path d="M50 44 L50 104" stroke={KIT.jerseyD} strokeWidth="1" opacity="0.5" />
+        {/* head — hangs back off the spine, eyes on the ball */}
+        <motion.g
+          style={{ originX: "50px", originY: "44px", transformBox: "view-box" }}
+          initial={false}
+          animate={{ rotate: diving ? [0, 0, -s * 2, -s * 8, -s * 15, -s * 12, -s * 4] : 0 }}
+          transition={diving ? beatTx : { duration: 0.4 }}
+        >
+          <circle cx="50" cy="30" r="13" fill={KIT.skin} />
+          <path d="M39 26 Q50 14 61 26 Q56 20 50 20 Q44 20 39 26 Z" fill="#3a2a1a" />
+        </motion.g>
+      </motion.g>
 
-      {/* head */}
-      <circle cx="50" cy="30" r="13" fill={SKIN} />
-      <path d="M39 26 Q50 14 61 26 Q56 20 50 20 Q44 20 39 26 Z" fill="#3a2a1a" />
+      {/* reaching arm in front */}
+      {frontL && <KeeperArm x={40} ready={READY_L} target={arm.l} leads={leadsL} diving={diving} clutch={saved && leadsL} />}
+      {frontR && <KeeperArm x={60} ready={READY_R} target={arm.r} leads={leadsR} diving={diving} clutch={saved && leadsR} />}
     </svg>
   );
 }
