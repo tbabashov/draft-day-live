@@ -45,11 +45,28 @@ export function PenaltyShootout({ taker, homeAbbr, awayAbbr, home, away, userIsH
       className="fixed inset-0 z-[9] overflow-hidden"
       style={{ background: "radial-gradient(ellipse at 50% 12%, oklch(0.28 0.03 260) 0%, oklch(0.08 0.015 260) 62%, oklch(0.05 0.01 260) 100%)" }}
     >
-      {/* floodlight glows */}
-      <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(circle at 22% 0%, rgba(255,255,255,0.12), transparent 30%), radial-gradient(circle at 78% 0%, rgba(255,255,255,0.12), transparent 30%)" }} />
-      {/* crowd speckle */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[26%] opacity-40"
-        style={{ background: "radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.4) 1px, transparent 0), radial-gradient(1px 1px at 60% 60%, rgba(255,255,255,0.3) 1px, transparent 0), radial-gradient(1px 1px at 80% 20%, rgba(255,255,255,0.35) 1px, transparent 0)", backgroundSize: "7px 7px, 11px 11px, 9px 9px" }} />
+      {/* Packed stands — a single full-bleed backdrop covering everything from
+          the top of the screen down to the pitch horizon, so it reads as one
+          continuous wall of fans behind the goal rather than a floating band.
+          The pitch (drawn later in the scene) sits in front and meets it at the
+          fade, hiding the seam. */}
+      <img
+        src={standsImg}
+        alt=""
+        aria-hidden
+        className="pointer-events-none select-none absolute inset-x-0 top-0 w-full"
+        style={{
+          height: "66%",
+          maxWidth: "none", // preflight caps images at 100%, killing the bleed
+          objectFit: "cover",
+          objectPosition: "center 58%",
+          filter: "brightness(0.34) contrast(1.04) saturate(0.82)",
+          maskImage: "linear-gradient(to bottom, black 0%, black 84%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 84%, transparent 100%)",
+        }}
+      />
+      {/* floodlight glows over the crowd */}
+      <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(circle at 22% 0%, rgba(255,255,255,0.1), transparent 28%), radial-gradient(circle at 78% 0%, rgba(255,255,255,0.1), transparent 28%)" }} />
 
       {/* header */}
       <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 text-center">
@@ -78,26 +95,6 @@ export function PenaltyShootout({ taker, homeAbbr, awayAbbr, home, away, userIsH
       {/* 3D scene */}
       <div className="absolute inset-0 flex items-center justify-center" style={{ perspective: "1000px", perspectiveOrigin: "50% 38%" }}>
         <div className="relative" style={{ transformStyle: "preserve-3d", width: "min(88vw, 900px)", height: "min(70vh, 560px)" }}>
-
-          {/* Crowd behind the goal. Rendered first so everything sits in front
-              of it, dimmed so the target zones still read clearly, and faded
-              out at the bottom so it melts into the pitch. */}
-          <img
-            src={standsImg}
-            alt=""
-            aria-hidden
-            className="absolute left-1/2 top-0 -translate-x-1/2 pointer-events-none select-none"
-            style={{
-              width: "220%",
-              maxWidth: "none", // preflight caps images at 100%, killing the bleed
-              height: "58%",
-              objectFit: "cover",
-              objectPosition: "center 62%",
-              filter: "brightness(0.3) contrast(1.05) saturate(0.8) blur(0.4px)",
-              maskImage: "linear-gradient(to bottom, black 74%, transparent 100%)",
-              WebkitMaskImage: "linear-gradient(to bottom, black 74%, transparent 100%)",
-            }}
-          />
 
           {/* pitch floor receding to the goal */}
           <div className="absolute left-1/2 bottom-0 -translate-x-1/2"
