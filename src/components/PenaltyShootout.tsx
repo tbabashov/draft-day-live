@@ -33,6 +33,32 @@ const ARM_EASE: Easing[] = ["easeIn", EXPLODE, SETTLE];
 
 const dirSign = (d: Dir) => (d === "left" ? -1 : d === "right" ? 1 : 0);
 
+/* Mode icons. Drawn rather than set as emoji: emoji render in someone else's
+   art style at whatever weight the platform ships, which next to this scene's
+   flat vectors looks like clip-art dropped into the page. */
+const strokeIcon = "w-[18px] h-[18px]";
+function BallIcon({ className = strokeIcon }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor"
+      strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7.3 16.5 10.6 14.8 15.8H9.2L7.5 10.6Z" />
+      <path d="M12 7.3V3M16.5 10.6 20.6 9.2M14.8 15.8 17.3 19.3M9.2 15.8 6.7 19.3M7.5 10.6 3.4 9.2" />
+    </svg>
+  );
+}
+function GloveIcon({ className = strokeIcon }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor"
+      strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M8.2 18.2v-6.3a4 4 0 0 1 8 0v6.3" />
+      <path d="M8.2 12.4H6.5a2.4 2.4 0 0 0 0 4.8h1.7" />
+      <path d="M10.9 8.2v4.3M13.5 8.2v4.3" />
+      <rect x="6.9" y="18.2" width="10.6" height="3.4" rx="1.4" />
+    </svg>
+  );
+}
+
 /* A big 3D-ish penalty scene: a goal in front of you split into three zones.
    Pick one, the ball flies, the keeper dives, and you sweat the result. */
 export function PenaltyShootout({ taker, homeAbbr, awayAbbr, home, away, userIsHome, anim, onPick, showTracker = true, label = "Penalty Shootout", subtitle, mode = "shoot" }: {
@@ -62,7 +88,6 @@ export function PenaltyShootout({ taker, homeAbbr, awayAbbr, home, away, userIsH
   const A = dive
     ? { main: "oklch(0.7 0.16 235)", glow: "oklch(0.7 0.16 235 / 0.55)", grad: "oklch(0.7 0.16 235 / 0.35)", gradSoft: "oklch(0.7 0.16 235 / 0.08)", hit: "oklch(0.7 0.16 235 / 0.18)" }
     : { main: "oklch(0.63 0.24 25)", glow: "oklch(0.63 0.24 25 / 0.5)", grad: "oklch(0.63 0.24 25 / 0.35)", gradSoft: "oklch(0.63 0.24 25 / 0.08)", hit: "oklch(0.63 0.24 25 / 0.18)" };
-  const zoneIcon = dive ? "🧤" : "✛";
 
   const yourRow = userIsHome ? home : away;
   const theirRow = userIsHome ? away : home;
@@ -96,25 +121,30 @@ export function PenaltyShootout({ taker, homeAbbr, awayAbbr, home, away, userIsH
       {/* floodlight glows over the crowd */}
       <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(circle at 22% 0%, rgba(255,255,255,0.1), transparent 28%), radial-gradient(circle at 78% 0%, rgba(255,255,255,0.1), transparent 28%)" }} />
 
-      {/* header */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 text-center">
-        <div className="font-mono text-xs uppercase tracking-[0.4em]" style={{ color: A.main }}>{label}</div>
-        {/* big glanceable mode badge: shoot vs save */}
-        <div
-          className="mt-2 inline-flex items-center gap-2 rounded-full border px-5 py-1.5 font-display text-2xl md:text-3xl tracking-wide leading-none"
-          style={{ color: A.main, borderColor: A.main, background: A.gradSoft, boxShadow: `0 0 30px ${A.glow}` }}
-        >
-          <span className="text-xl md:text-2xl">{dive ? "🧤" : "⚽"}</span>
-          {dive ? "YOU SAVE" : "YOU SHOOT"}
+      {/* Header. One panel rather than three floating lines: the round and
+          score used to sit straight on the crossbar with nothing behind them,
+          which read as a rendering fault. Matches the scoreboard panel below
+          so the two look like one set of graphics. */}
+      <div className="absolute top-4 sm:top-5 left-1/2 -translate-x-1/2 z-20 w-max max-w-[92vw]">
+        <div className="flex items-center gap-3 rounded-2xl border border-white/12 bg-black/70 backdrop-blur-md py-2 pl-2 pr-4 shadow-2xl">
+          <span className="grid place-items-center w-10 h-10 rounded-xl shrink-0"
+            style={{ color: A.main, background: A.gradSoft, boxShadow: `inset 0 0 0 1px ${A.main}`, opacity: 0.95 }}>
+            {dive ? <GloveIcon /> : <BallIcon />}
+          </span>
+          <span className="min-w-0">
+            <span className="block font-display text-lg sm:text-xl leading-none tracking-wide" style={{ color: A.main }}>
+              {dive ? "YOU SAVE" : "YOU SHOOT"}
+            </span>
+            <span className="mt-1.5 block font-mono text-[10px] uppercase tracking-[0.2em] text-white/45 truncate">
+              {!showTracker && subtitle ? subtitle : label}
+            </span>
+          </span>
         </div>
-        {!showTracker && subtitle && (
-          <div className="mt-1.5 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">{subtitle}</div>
-        )}
       </div>
 
       {/* shootout scoreboard — own panel, top-left, so it stays readable */}
       {showTracker && (
-        <div className="absolute z-20 flex flex-col gap-2 rounded-xl border border-white/15 bg-black/70 backdrop-blur-md px-4 py-2.5 sm:py-3 shadow-2xl left-1/2 -translate-x-1/2 top-[104px] sm:left-5 sm:translate-x-0 sm:top-5">
+        <div className="absolute z-20 flex flex-col gap-2 rounded-2xl border border-white/12 bg-black/70 backdrop-blur-md px-4 py-2.5 sm:py-3 shadow-2xl left-1/2 -translate-x-1/2 top-[104px] sm:left-5 sm:translate-x-0 sm:top-5">
           <PenTracker abbr={userIsHome ? homeAbbr : awayAbbr} row={yourRow} you />
           <PenTracker abbr={userIsHome ? awayAbbr : homeAbbr} row={theirRow} />
         </div>
@@ -182,7 +212,9 @@ export function PenaltyShootout({ taker, homeAbbr, awayAbbr, home, away, userIsH
                     {aiming && active && (
                       <span className="absolute inset-0 grid place-items-center">
                         <span className="grid place-items-center w-12 h-12 rounded-full border-2 font-display text-xl"
-                          style={{ borderColor: A.main, color: A.main, boxShadow: `0 0 24px ${A.glow}` }}>{zoneIcon}</span>
+                          style={{ borderColor: A.main, color: A.main, boxShadow: `0 0 24px ${A.glow}` }}>
+                          {dive ? <GloveIcon className="w-6 h-6" /> : <BallIcon className="w-6 h-6" />}
+                        </span>
                       </span>
                     )}
                   </button>
