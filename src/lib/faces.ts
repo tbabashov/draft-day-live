@@ -17,15 +17,7 @@ const ALIASES: Record<string, string> = {
   totigomes: "toti",              // card shows Toti
   dominikszoboszlai: "dominicszoboszlai",
   // surname-only uploads
-  doku: "jeremydoku",
-  isidor: "wilsonisidor",
-  kinsky: "antoninkinsky",
-  foden: "philfoden",
-  gvardiol: "joskogvardiol",
   kolomuani: "randalkolomuani",
-  kulusevski: "dejankulusevski",
-  minteh: "yankubaminteh",
-  wieffer: "matswieffer",
   vandeven: "mickyvandeven",
 };
 
