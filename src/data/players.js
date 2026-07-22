@@ -172,7 +172,6 @@ const ARSENAL_RAW = `1 David Raya GK TBD 30 87
 14 Mikel Merino CM TBD 30 83
 15 Martín Zubimendi CDM TBD 27 85
 16 Declan Rice CDM TBD 27 89
-17 Albert Sambi Lokonga CM TBD 25 76
 18 Kai Havertz ST TBD 27 84
 19 Bukayo Saka RW TBD 24 88
 20 Eberechi Eze CAM TBD 28 83
@@ -204,7 +203,6 @@ const ASTONVILLA_RAW = `1 Emiliano Martínez GK TBD 33 85
 15 Leon Bailey LW TBD 28 80
 17 Emiliano Buendía CAM TBD 29 79
 18 Ollie Watkins ST TBD 30 84
-19 Andres García ST TBD 22 73
 20 Tammy Abraham ST TBD 28 78
 21 Evann Guessand ST TBD 25 72
 22 Rory Wilson ST TBD 18 66
@@ -212,7 +210,6 @@ const ASTONVILLA_RAW = `1 Emiliano Martínez GK TBD 33 85
 24 Kadan Young LW TBD 19 68
 25 Samuel Iling-Junior LM TBD 22 73
 26 Joe Gauci GK TBD 26 68
-27 Oliwier Zych GK TBD 22 64
 28 Kosta Nedeljkovic RB TBD 20 73
 29 Lamare Bogarde CDM TBD 22 71
 30 Alysson RW TBD 20 70
@@ -236,7 +233,6 @@ const BOURNEMOUTH_RAW = `1 Djordje Petrovic GK TBD 26 80
 15 Evanilson ST TBD 26 80
 16 Justin Kluivert LW TBD 27 78
 17 Enes Ünal ST TBD 29 76
-19 Dominic Sadi CM TBD 21 65
 20 Ben Doak RW TBD 20 68
 21 Alex Jimenez RB TBD 21 74
 22 Eli Junior Kroupi ST TBD 20 78
@@ -270,7 +266,6 @@ const BRENTFORD_RAW = `1 Caoimhín Kelleher GK TBD 27 83
 18 Kevin Schade LW TBD 24 75
 19 Valentine Adedokun RW TBD 21 67
 20 Jordan Henderson CM TBD 36 79
-21 Myles Harris CM TBD 20 64
 22 Jayden Meghoma LB TBD 20 74
 23 Jannik Schuster CM TBD 20 67
 24 Yunus Emre Konak CDM TBD 20 69
@@ -347,7 +342,6 @@ const CHELSEA_RAW = `1 Filip Jørgensen GK TBD 24 78
 24 Jorrel Hato LB TBD 20 76
 25 Marc Guiu ST TBD 20 70
 26 Caleb Wiley LB TBD 19 68
-27 Kendry Páez CAM TBD 19 75
 28 Josh Acheampong RB TBD 20 70
 29 Omari Kellyman CAM TBD 20 69
 21 Nicolas Jackson ST TBD 25 79
@@ -416,7 +410,6 @@ const EVERTON_RAW = `1 Jordan Pickford GK TBD 32 84
 
 const FULHAM_RAW = `1 Bernd Leno GK TBD 34 82
 2 Benjamin Lecomte GK TBD 35 76
-3 Marek Rodák GK TBD 27 73
 4 Kenny Tete RB TBD 30 77
 5 Antonee Robinson LB TBD 28 82
 7 Joachim Andersen CB TBD 30 81
@@ -433,12 +426,10 @@ const FULHAM_RAW = `1 Bernd Leno GK TBD 34 82
 19 Emile Smith Rowe CAM TBD 25 77
 20 Jorge Cuenca LW TBD 26 73
 21 Rodrigo Muniz ST TBD 24 79
-23 Samuel Chukwueze RW TBD 25 78
 24 Kevin Dos Santos RW TBD 23 76
 25 Sander Berge CM TBD 28 79
 26 Luke Harris CM TBD 21 68
 27 Josh King CM TBD 19 67
-28 Luc De Fougerolles CB TBD 20 68
 50 Jonah Kusi-Asare ST TBD 19 70`;
 
 const LEEDS_RAW = `1 Lucas Perri GK TBD 28 80
@@ -552,7 +543,6 @@ const MANUTD_RAW = `1 Senne Lammens GK TBD 24 82
 21 Marcus Rashford LW TBD 28 82
 22 Diego León LB TBD 19 69
 23 Ayden Heaven CB TBD 19 70
-24 Sekou Koné CM TBD 19 68
 25 Chido Obi ST TBD 18 70
 26 Harry Amass LB TBD 19 71
 27 Shea Lacey RW TBD 18 68
@@ -688,7 +678,6 @@ const HULL_RAW = `1 Jack Butland GK TBD 33 76
 7 Abdülkadir Ömür CAM TBD 27 73
 8 Eliot Matazo CDM TBD 24 72
 9 Oliver McBurnie ST TBD 30 72
-10 Kasey Palmer CAM TBD 29 72
 11 Liam Millar LW TBD 26 71
 12 Harvey Cartwright GK TBD 24 66
 13 Kieran Dowell CAM TBD 28 72
@@ -701,7 +690,6 @@ const HULL_RAW = `1 Jack Butland GK TBD 33 76
 20 Mason Burstow ST TBD 22 70
 21 Matt Crooks CM TBD 32 70
 22 Mohamed Belloumi RW TBD 24 70
-23 Kyle Joseph ST TBD 24 70
 24 Dillon Phillips GK TBD 31 68
 25 Thimothee Lo-Tutala GK TBD 23 65`;
 
@@ -728,10 +716,8 @@ const IPSWICH_RAW = `1 Alex Palmer GK TBD 29 74
 21 Ali Al-Hamadi ST TBD 24 71
 22 Harrison Clarke RB TBD 25 70
 23 Darnell Furlong RB TBD 30 72
-24 Elkan Baggott CB TBD 23 68
 25 Sindre Walle Egeli ST TBD 20 69
 26 Finley Barbrook CM TBD 21 66
-27 Cieran Slicker GK TBD 23 66
 62 Emersonn ST TBD 22 72`;
 
 const COVENTRY_RAW = `1 Oliver Dovin GK TBD 24 72
