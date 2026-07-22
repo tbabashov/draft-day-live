@@ -258,7 +258,6 @@ const BOURNEMOUTH_RAW = `1 Djordje Petrovic GK TBD 26 80
 30 Rayan RW TBD 19 76
 50 Alvaro Rodriguez ST TBD 22 76
 60 Alex Paulsen GK TBD 24 68
-61 Romain Faivre CM TBD 28 72
 62 Owen Bevan CB TBD 22 66
 63 Ben Winterburn CM TBD 21 64
 64 Remy Rees-Dottin RW TBD 20 64`;
@@ -329,7 +328,6 @@ const BRIGHTON_RAW = `1 Bart Verbruggen GK TBD 23 82
 51 Pascal Struijk CB TBD 26 77
 60 Costinha CB TBD 26 72
 61 Eiran Cashin CB TBD 24 73
-62 Diego Coppola CB TBD 22 74
 63 Amario Cozier-Duberry RW TBD 21 69
 64 Malick Yalcouyé CDM TBD 20 71
 65 Ibrahim Osman RW TBD 21 71
@@ -339,7 +337,8 @@ const BRIGHTON_RAW = `1 Bart Verbruggen GK TBD 23 82
 69 Zadok Yohanna CM TBD 19 63
 70 Mark O'Mahony ST TBD 21 66
 71 Yoon Do-Yong LW TBD 19 65
-72 Rodrigo Rêgo RW TBD 21 66`;
+72 Rodrigo Rêgo RW TBD 21 66
+62 Luka Vuskovic CB TBD 19 79`;
 
 
 const CHELSEA_RAW = `1 Filip Jørgensen GK TBD 24 78
@@ -376,7 +375,6 @@ const CHELSEA_RAW = `1 Filip Jørgensen GK TBD 24 78
 50 Marco Palestra RB TBD 21 79
 51 Geovany Quenda RW TBD 19 79
 60 Gaga Slonina GK TBD 22 68
-61 Aaron Anselmino CB TBD 21 71
 62 Mykhailo Mudryk LW TBD 25 76
 63 Morgan Rogers CAM TBD 23 82
 64 Emmanuel Emegha ST TBD 23 77
@@ -468,8 +466,7 @@ const FULHAM_RAW = `1 Bernd Leno GK TBD 34 82
 26 Luke Harris CM TBD 21 68
 27 Josh King CM TBD 19 67
 28 Luc De Fougerolles CB TBD 20 68
-50 Jonah Kusi-Asare ST TBD 19 70
-60 Harry Wilson CAM TBD 29 76`;
+50 Jonah Kusi-Asare ST TBD 19 70`;
 
 const LEEDS_RAW = `1 Lucas Perri GK TBD 28 80
 2 Alex Cairns GK TBD 32 71
@@ -492,13 +489,12 @@ const LEEDS_RAW = `1 Lucas Perri GK TBD 28 80
 22 Noah Okafor ST TBD 26 76
 23 Lukas Nmecha ST TBD 27 74
 25 Largie Ramazani LW TBD 25 75
-60 Karl Darlow GK TBD 35 72
 61 Maximilian Wöber CB TBD 28 75
-62 Isaac Schmidt RB TBD 26 71
 63 Sam Byram LB TBD 32 70
 64 Jack Harrison LW TBD 29 74
 65 Joe Gelhardt ST TBD 24 70
-66 Mateo Joseph ST TBD 22 72`;
+66 Mateo Joseph ST TBD 22 72
+60 Harry Wilson CAM TBD 29 76`;
 
 const LIVERPOOL_RAW = `1 Alisson Becker GK TBD 33 89
 2 Giorgi Mamardashvili GK TBD 25 81
@@ -530,7 +526,6 @@ const LIVERPOOL_RAW = `1 Alisson Becker GK TBD 33 89
 31 Jayden Danns ST TBD 20 70
 50 Jérémy Jacquet CB TBD 20 78
 51 Víctor Muñoz LW TBD 22 78
-60 Vítězslav Jaroš GK TBD 24 70
 61 Giovanni Leoni CB TBD 19 76
 62 Talla Ndiaye CB TBD 18 62
 63 James McConnell CM TBD 21 68
@@ -563,7 +558,6 @@ const MANCITY_RAW = `1 Gianluigi Donnarumma GK TBD 27 90
 14 Savinho LW TBD 22 78
 50 Elliot Anderson CM TBD 23 83
 51 Jeremy Monga RW TBD 17 68
-60 Manuel Akanji CB TBD 31 82
 61 Vitor Reis CB TBD 20 74
 62 Claudio Echeverri CAM TBD 20 75
 63 Issa Kaboré RB TBD 25 71
@@ -603,13 +597,13 @@ const MANUTD_RAW = `1 Senne Lammens GK TBD 24 82
 30 Joshua Zirkzee ST TBD 25 75
 50 Youri Tielemans CM TBD 29 84
 51 Andrey Santos CM TBD 22 74
-60 André Onana GK TBD 30 79
 61 Tyler Fredricson CB TBD 21 68
 62 Toby Collyer CM TBD 22 69
 63 Jack Fletcher CM TBD 19 64
 64 Tyler Fletcher CM TBD 19 64
 65 Ethan Wheatley ST TBD 20 65
-66 Enzo Kana-Biyik ST TBD 19 62`;
+66 Enzo Kana-Biyik ST TBD 19 62
+60 Karl Darlow GK TBD 35 74`;
 
 const NEWCASTLE_RAW = `1 Nick Pope GK TBD 34 82
 2 Mark Gillespie GK TBD 34 68
@@ -630,10 +624,8 @@ const NEWCASTLE_RAW = `1 Nick Pope GK TBD 34 82
 26 Malick Thiaw CB TBD 24 79
 50 Bazoumana Touré LW TBD 20 78
 51 Sean Steur CM TBD 18 72
-60 Odisseas Vlachodimos GK TBD 32 74
 61 Harrison Ashby RB TBD 24 70
 62 Joe White CM TBD 27 67
-63 Sandro Tonali CM TBD 26 86
 64 Jacob Ramsey CM TBD 25 78
 65 William Osula ST TBD 22 71
 66 Anthony Elanga RW TBD 24 78
@@ -670,7 +662,6 @@ const NOTTMFOREST_RAW = `1 Matz Sels GK TBD 34 82
 63 Luca Netz LB TBD 23 74
 64 Nikola Milenković CB TBD 28 82
 65 Nicolò Savona RB TBD 23 74
-66 Jota Silva LW TBD 26 73
 67 Jair Paula LB TBD 21 66
 68 Eric Da Silva Moreira RW TBD 20 68`;
 
@@ -690,7 +681,6 @@ const SUNDERLAND_RAW = `1 Anthony Patterson GK TBD 24 73
 50 Thomas Meunier RB TBD 34 72
 60 Melker Ellborg GK TBD 23 66
 61 Simon Moore GK TBD 36 63
-62 Lutsharel Geertruida CB TBD 26 76
 63 Reinildo Mandava LB TBD 32 74
 64 Omar Alderete CB TBD 29 75
 65 Dennis Cirkin LB TBD 24 72
@@ -706,7 +696,6 @@ const SUNDERLAND_RAW = `1 Anthony Patterson GK TBD 24 73
 75 Arthur Masuaku LB TBD 32 70
 76 Jenson Seelt CB TBD 23 68
 77 Leo Hjelde CB TBD 22 67
-78 Simon Adingra LW TBD 24 75
 79 Luís Semedo ST TBD 22 68
 80 Trey Ogunsuyi ST TBD 19 63
 81 Tymur Tutierov CM TBD 21 64`;
@@ -739,19 +728,18 @@ const TOTTENHAM_RAW = `1 Guglielmo Vicario GK TBD 29 82
 36 Marcos Senesi CB TBD 29 79
 50 Jan Paul van Hecke CB TBD 26 79
 60 Kota Takai CB TBD 21 72
-61 Luka Vuskovic CB TBD 19 79
 62 Radu Drăgușin CB TBD 24 77
 63 Kevin Danso CB TBD 27 76
 64 Djed Spence LB TBD 25 78
 65 Alfie Devine CM TBD 21 68
 66 Mohammed Kudus RW TBD 25 82
-67 Manor Solomon LW TBD 26 73
 68 Dane Scarlett ST TBD 22 68
 69 Will Lankshear ST TBD 21 70
 70 Richarlison ST TBD 29 78
 71 George Abbott CB TBD 20 65
 72 Souza CB TBD 20 66
-73 Jamie Donley CAM TBD 21 69`;
+73 Jamie Donley CAM TBD 21 69
+61 Sandro Tonali CM TBD 26 86`;
 
 
 
@@ -813,7 +801,6 @@ const IPSWICH_RAW = `1 Alex Palmer GK TBD 29 74
 26 Finley Barbrook CM TBD 21 66
 27 Cieran Slicker GK TBD 23 66
 60 David Button GK TBD 37 64
-61 Fatawu Issahaku RW TBD 22 74
 62 Emersonn ST TBD 22 72
 63 Kayne Van Oevelen GK TBD 22 63`;
 
