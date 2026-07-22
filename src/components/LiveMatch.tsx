@@ -6,6 +6,7 @@ import { FORMATIONS, remapXi, type FormationId, type TacticsSettings } from "@/l
 import type { TeamEntry, MatchEvent } from "@/lib/tournament-utils";
 import { MatchEngine, type SideInit, type LiveEvent } from "@/lib/match-engine";
 import { clubLogo } from "@/lib/logos";
+import { shortClubName } from "@/lib/club-names";
 import { Confetti } from "@/components/Confetti";
 import { PenaltyShootout, type PenAnim } from "@/components/PenaltyShootout";
 import { loadSettings } from "@/lib/settings";
@@ -564,7 +565,7 @@ export function LiveMatch({ home, away, roundName, userSide, context = "cup", on
                   </div>
                 )}
                 <div className="mt-2 font-mono text-xs uppercase tracking-widest text-white/60">
-                  {eng.home.entry.name} vs {eng.away.entry.name}
+                  <TeamName entry={eng.home.entry} /> vs <TeamName entry={eng.away.entry} />
                 </div>
                 <p className="mt-4 text-sm text-white/75 max-w-sm mx-auto">
                   {userWon
@@ -615,6 +616,17 @@ export function LiveMatch({ home, away, roundName, userSide, context = "cup", on
 
 /* ---------------- pieces ---------------- */
 
+/* Phones get the short name, wider screens keep the formal one — there's room
+   for it there, and it's the name on the team sheet. */
+function TeamName({ entry }: { entry: TeamEntry }) {
+  return (
+    <>
+      <span className="sm:hidden">{shortClubName(entry.name)}</span>
+      <span className="hidden sm:inline">{entry.name}</span>
+    </>
+  );
+}
+
 function ScoreTeam({ entry, align }: { entry: TeamEntry; align: "left" | "right" }) {
   const logo = clubLogo(entry.id);
   return (
@@ -630,7 +642,7 @@ function ScoreTeam({ entry, align }: { entry: TeamEntry; align: "left" | "right"
         </div>
       )}
       <div className="min-w-0">
-        <div className="font-display text-xl truncate">{entry.name}</div>
+        <div className="font-display text-xl truncate"><TeamName entry={entry} /></div>
         {entry.isUser && <div className="text-[9px] font-bold uppercase tracking-widest text-primary">You</div>}
       </div>
     </div>
