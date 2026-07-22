@@ -203,7 +203,7 @@ function TournamentPage() {
         const won = m.winner?.id === "user";
         um.push({ gf, ga, won, oppAbbr: (isHome ? m.away : m.home).abbr });
         if (!won) eliminatedIn = ri;
-        for (const e of m.events ?? []) if (e.type === "goal" && e.side === side && e.playerName) scorers.set(e.playerName, (scorers.get(e.playerName) ?? 0) + 1);
+        for (const e of m.events ?? []) if (e.type === "goal" && e.side === side && e.playerName && !e.ownGoal) scorers.set(e.playerName, (scorers.get(e.playerName) ?? 0) + 1);
       }
     }
     const rank = strengthRank(b.seeds, "user");
@@ -727,7 +727,7 @@ function MatchModal({ match, onClose }: { match: BracketMatch; onClose: () => vo
                   <span className="font-display text-lg w-10 text-muted-foreground tabular-nums">{e.minute}&apos;</span>
                   <img src={ballIcon} alt="" className="w-4 h-4 object-contain [filter:brightness(0)_invert(1)]" />
                   <span className="flex-1">
-                    <b>{e.playerName}</b>
+                    <b>{e.playerName}</b>{e.ownGoal && <span className="text-muted-foreground"> (o.g.)</span>}
                     <span className="text-muted-foreground"> · {e.side === "home" ? match.home!.abbr : match.away!.abbr}</span>
                   </span>
                 </li>
@@ -773,7 +773,7 @@ function buildRunSummary(bracket: Bracket) {
       });
       for (const e of m.events ?? []) {
         if (e.type !== "goal" || e.side !== userSide) continue;
-        if (e.playerName) scorers.set(e.playerName, (scorers.get(e.playerName) ?? 0) + 1);
+        if (e.playerName && !e.ownGoal) scorers.set(e.playerName, (scorers.get(e.playerName) ?? 0) + 1);
         if (e.assistName) assisters.set(e.assistName, (assisters.get(e.assistName) ?? 0) + 1);
       }
     }

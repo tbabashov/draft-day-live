@@ -618,7 +618,7 @@ function LeagueResultModal({ fixture, teamById, onClose }: {
                   <span className="font-display text-lg w-10 text-muted-foreground tabular-nums">{e.minute}&apos;</span>
                   <img src={ballIcon} alt="" className="w-4 h-4 object-contain [filter:brightness(0)_invert(1)]" />
                   <span className="flex-1">
-                    <b>{e.playerName}</b>
+                    <b>{e.playerName}</b>{e.ownGoal && <span className="text-muted-foreground"> (o.g.)</span>}
                     <span className="text-muted-foreground"> · {e.side === "home" ? home.abbr : away.abbr}</span>
                   </span>
                 </li>

@@ -53,6 +53,15 @@ const LINES: Record<string, string[]> = {
     "How has that stayed out?! {player} slices it past the far post!",
     "{player} snatches at it! The ball balloons into the stands and the chance is gone.",
   ],
+  goalOwn: [
+    "OH NO! It's in his OWN net! {player} turns it past his own goalkeeper — {score}!",
+    "Disaster for {opp}! {player} can only divert it into his own goal. {score}, and he's on his knees.",
+    "{player} stretches to cut out the cross... and puts it into his own net! An own goal! {score}!",
+    "It's come off {player} and looped over his own keeper! Nothing anyone could do. {score}!",
+    "Calamity at the back! {player} slices it beyond his own goalkeeper — you can see the agony on his face. {score}!",
+    "{player} will have nightmares about this one. Into his own net under no pressure at all! {score}!",
+    "The cross comes in, {player} gets there first — and puts it past his own man! {team} could not have asked for more. {score}!",
+  ],
   goalComeback: [
     "THE COMEBACK IS COMPLETE! {player} turns this match on its head — {team} lead! {score}!",
     "From the dead, {team} RISE! {player} caps an astonishing turnaround! {score}!",
@@ -367,6 +376,11 @@ const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v
 const rand = (lo: number, hi: number) => lo + Math.random() * (hi - lo);
 
 /* Players with their own goal commentary. Keyed by last name, lowercase. */
+/* Share of goals that go in off a defender. Real football runs a bit under 3%
+   of all goals; at ~2.8 goals a game that's roughly one own goal every dozen
+   matches — rare enough to still feel like an event when it lands. */
+const OWN_GOAL_CHANCE = 0.03;
+
 const SIGNATURE_GOALS: Record<string, string> = {
   salah: "goalSalah",
 };
@@ -441,7 +455,7 @@ export class MatchEngine {
 
   pens: { home: (boolean | null)[]; away: (boolean | null)[]; turn: "home" | "away"; kicks: number } | null = null;
   winner: "home" | "away" | null = null;
-  goalsLog: { minute: number; side: "home" | "away"; playerName: string; assistName?: string }[] = [];
+  goalsLog: { minute: number; side: "home" | "away"; playerName: string; assistName?: string; ownGoal?: boolean }[] = [];
   /* Cards & injuries as they happen — consumed by the run's squad-status
      store to carry suspensions and knocks into the next match. */
   disciplineLog: { side: "home" | "away"; playerId: string; name: string; kind: "yellow" | "red" | "injury"; severity?: number }[] = [];
@@ -1163,28 +1177,47 @@ export class MatchEngine {
       const gk = this.keeper(dfn);
       if (action.outcome === "goal") {
         if (att === "home") { this.homeScore++; this.stats.onTargetHome++; } else { this.awayScore++; this.stats.onTargetAway++; }
+
+        /* Own goal: the cross that comes off a defender, the block that loops
+           over the keeper. The goal still stands for the attacking side, but a
+           defender's name goes on it, nobody gets an assist, and it counts
+           towards nobody's Golden Boot. Defenders only — a keeper turning it
+           in would read as the keeper "scoring", which the rest of the engine
+           works hard to prevent. */
+        const ogPool = this.side(dfn).players.filter(
+          (rp) => !rp.off && ["CB", "LB", "RB", "LWB", "RWB", "CDM"].includes(rp.slot.kind)
+        );
+        // Uniform, not weighted: a better defender is no likelier to slice one in.
+        const og = ogPool.length && Math.random() < OWN_GOAL_CHANCE
+          ? ogPool[Math.floor(Math.random() * ogPool.length)]
+          : null;
+
         const mates = this.side(att).players.filter((rp) => !rp.off && rp !== shooter && rp.slot.kind !== "GK");
-        const assistRp = Math.random() < 0.78 && mates.length ? this.weightedPick(mates) : null;
+        const assistRp = !og && Math.random() < 0.78 && mates.length ? this.weightedPick(mates) : null;
         const assistName = assistRp ? lastName(assistRp.p) : undefined;
-        this.rate(shooter, att, 1.0);
+        if (og) this.rate(og, dfn, -1.2); else this.rate(shooter, att, 1.0);
         if (assistRp) this.rate(assistRp, att, 0.5);
         for (const rp of this.side(dfn).players) {
           if (!rp.off && ["GK", "CB", "LB", "RB", "LWB", "RWB"].includes(rp.slot.kind)) this.rate(rp, dfn, -0.15);
         }
-        this.goalsLog.push({ minute: Math.max(1, Math.ceil(this.minute)), side: att, playerName: lastName(shooter.p), assistName });
-        this.highlight("goal", att, `${lastName(shooter.p)}${assistName ? ` (${assistName})` : ""} · ${this.score()}`);
+        const credited = og ? lastName(og.p) : lastName(shooter.p);
+        this.goalsLog.push({ minute: Math.max(1, Math.ceil(this.minute)), side: att, playerName: credited, assistName, ownGoal: !!og });
+        this.highlight("goal", att, `${credited}${og ? " (o.g.)" : assistName ? ` (${assistName})` : ""} · ${this.score()}`);
 
         // Pick the commentary that fits the moment, not just "a goal".
         const attScore = att === "home" ? this.homeScore : this.awayScore;
         const dfnScore = att === "home" ? this.awayScore : this.homeScore;
         const diff = attScore - dfnScore;
-        const signature = SIGNATURE_GOALS[lastName(shooter.p).toLowerCase()];
+        const signature = og ? undefined : SIGNATURE_GOALS[lastName(shooter.p).toLowerCase()];
         // Key by side too: a drafted player can share an id with the same
         // real player in the opponent's XI, so tally each team's copy apart.
+        // An own goal is nobody's tally — it must never build to a hat-trick.
         const scorerKey = `${att}:${shooter.p.id}`;
-        const scorerTally = (this.scorerGoals[scorerKey] = (this.scorerGoals[scorerKey] ?? 0) + 1);
+        const scorerTally = og ? 0 : (this.scorerGoals[scorerKey] = (this.scorerGoals[scorerKey] ?? 0) + 1);
         let cat = "goal";
-        if (this.phase === "second" && this.minute >= 88 && diff === 1) {
+        if (og) {
+          cat = "goalOwn";
+        } else if (this.phase === "second" && this.minute >= 88 && diff === 1) {
           cat = "goalLastMinute";
         } else if (diff >= 1 && this.maxDeficit[att] >= 2 && !this.comebackDone[att]) {
           cat = "goalComeback";
@@ -1207,7 +1240,7 @@ export class MatchEngine {
         // Remember how deep the hole got, for comeback detection later.
         this.maxDeficit.home = Math.max(this.maxDeficit.home, this.awayScore - this.homeScore);
         this.maxDeficit.away = Math.max(this.maxDeficit.away, this.homeScore - this.awayScore);
-        this.push("goal", say(cat, { player: lastName(shooter.p), team: attTeam, opp: dfnTeam, score: this.score() }), att);
+        this.push("goal", say(cat, { player: credited, team: attTeam, opp: dfnTeam, score: this.score() }), att);
         if (!this.pendingVar && Math.random() < 0.1) {
           this.pendingVar = { side: att, resolveAt: this.minute + rand(0.8, 1.6), logIndex: this.goalsLog.length - 1 };
           this.push("var", say("varCheck"), att);

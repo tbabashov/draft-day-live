@@ -210,7 +210,7 @@ export function LiveMatch({ home, away, roundName, userSide, context = "cup", on
       homeScore: eng.homeScore,
       awayScore: eng.awayScore,
       winnerId: winnerSide ? eng.side(winnerSide).entry.id : null,
-      events: eng.goalsLog.map((g) => ({ minute: g.minute, type: "goal" as const, side: g.side, playerName: g.playerName, assistName: g.assistName })),
+      events: eng.goalsLog.map((g) => ({ minute: g.minute, type: "goal" as const, side: g.side, playerName: g.playerName, assistName: g.assistName, ownGoal: g.ownGoal })),
       pens: eng.pens ? { home: eng.pens.home.filter(Boolean).length, away: eng.pens.away.filter(Boolean).length } : undefined,
       ratings: eng.matchRatings().filter((r) => r.side === userSide).map((r) => ({ id: r.id, rating: r.rating })),
       discipline: eng.disciplineLog.filter((d) => d.side === userSide).map((d) => ({ playerId: d.playerId, name: d.name, kind: d.kind, severity: d.severity })),
@@ -218,14 +218,14 @@ export function LiveMatch({ home, away, roundName, userSide, context = "cup", on
   };
 
   // Brief celebration when YOUR team scores.
-  const [goalFlash, setGoalFlash] = useState<{ key: number; player: string; minute: number } | null>(null);
+  const [goalFlash, setGoalFlash] = useState<{ key: number; player: string; minute: number; ownGoal?: boolean } | null>(null);
   const goalCountRef = useRef(0);
   useEffect(() => {
     const log = eng.goalsLog;
     if (log.length > goalCountRef.current) {
       const g = log[log.length - 1];
       if (g.side === userSide) {
-        setGoalFlash({ key: Date.now(), player: g.playerName, minute: g.minute });
+        setGoalFlash({ key: Date.now(), player: g.playerName, minute: g.minute, ownGoal: g.ownGoal });
       }
     }
     goalCountRef.current = log.length; // also tracks VAR overturns shrinking the log
@@ -402,7 +402,7 @@ export function LiveMatch({ home, away, roundName, userSide, context = "cup", on
                 GOAL!
               </div>
               <div className="mt-1 font-display text-2xl md:text-3xl uppercase tracking-wide text-white/90">
-                {goalFlash.player} scores!
+                {goalFlash.player} {goalFlash.ownGoal ? "— own goal!" : "scores!"}
               </div>
               <div className="mt-1 font-mono text-xs uppercase tracking-[0.3em] text-white/70">
                 {goalFlash.minute > 90 ? `90+${goalFlash.minute - 90}` : goalFlash.minute}&apos;

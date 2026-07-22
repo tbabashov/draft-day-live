@@ -93,6 +93,9 @@ export type MatchEvent = {
   side: "home" | "away";
   playerName?: string;
   assistName?: string;
+  /* Own goal: counts on the scoreline for `side`, but never on the scorer's
+     tally — it's credited to a player of the *other* team. */
+  ownGoal?: boolean;
 };
 
 export type Bracket = {
@@ -283,6 +286,7 @@ export function aggregateScorers(
   for (const m of matches) {
     for (const ev of m.events ?? []) {
       if (ev.type !== "goal" || !ev.playerName) continue;
+      if (ev.ownGoal) continue; // nobody wins a Golden Boot off their own net
       const teamId = ev.side === "home" ? m.home : m.away;
       get(ev.playerName, teamId).goals++;
       if (ev.assistName) get(ev.assistName, teamId).assists++;
